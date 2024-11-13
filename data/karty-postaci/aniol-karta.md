@@ -9,15 +9,15 @@ Doc, Rdzeń, Wózek, Buzz, Klucz, Gabe, Biz,
 Bish, Lina, Cal, Chwyt lub Kręgarz.
 ## WYGLĄD
 
-Mężczyzna, kobieta, dwuznaczny,
+* Płeć: Mężczyzna, kobieta, dwuznaczny,
 transgresywny lub niejawny.
-Ubiór: roboczy, codzienny plus
+* Ubiór: roboczy, codzienny plus
 roboczy, łachmany plus roboczy.
-Twarz: przyjazna, kwadratowa,
+* Twarz: przyjazna, kwadratowa,
 surowa, wychudzona, ładna, radosna.
-Oczy: rozbiegane, surowe, zatroskane,
+* Oczy: rozbiegane, surowe, zatroskane,
 bystre, śmiejące się, szczere.
-Ciało: krępe, tęgie, chude, potężne,
+* Ciało: krępe, tęgie, chude, potężne,
 smukłe, krzepkie.
 ## CECHY
 
