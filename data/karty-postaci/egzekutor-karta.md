@@ -8,7 +8,7 @@ Vonk Rzeźbiarz, Batty, Jonker, A.T., Rue
 Wakeman, Navarre, Man, Kartak, Barbarossa,
 Keeler, Grekkor, Crille, Doom lub Kapelan.
 Reks, Fido, Łata, Bokser, Doberman, Trey,
-Zabójca, Burek, Fi, Puszek, Baron, Wilk,
+Zabójca, Burek, Fifi, Puszek, Baron, Wilk,
 Azor, Maks lub Kumpel.
 
 ## WYGLĄD
