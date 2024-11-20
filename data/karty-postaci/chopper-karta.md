@@ -99,3 +99,15 @@ wygląda na to, że jeden z was ma przy sobie rzecz, której akurat poszukujesz,
 coś bardzo podobnego. Na 7–9 jeden z was ma coś podobnego. Jeśli szukasz czegoś
 hi-tech, nawet nie sięgaj po kości. W przypadku porażki któreś z was miało właśnie
 to coś, ale najwyraźniej jakiś dupek wam to ukradł.
+
+## Motocykl
+
+Zalety (wybierz 1 lub 2): szybki, wytrzymały,
+agresywny, mocno podkręcony, wielki, zwrotny.
+Wygląd (wybierz 1 lub 2): opływowy kształt,
+vintage, mocno odchudzony, rycząca bestia,
+masywny, muskularny, szpanerski, luksusowy.
+Słabości (wybierz 1): wolny, zaniedbany, cholernie
+dużo pali, drobny, niestabilny, kapryśny, zawodny.
+Jeśli z jakiegoś powodu potrzebujesz parametrów swojego motocyklu (domyślnie nie potrzebujesz ich), prezentują się one następująco: moc+1,
+wygląd+1, 1-pancerza, słabość+1.
