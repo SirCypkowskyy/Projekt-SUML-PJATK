@@ -1,4 +1,4 @@
-# TWORZENIE ANIOLA
+# TWORZENIE CHOPPERA
 
 Aby stworzyć swojego choppera, wybierz imię, wygląd, cechy, ruchy, motocykl,sprzęt oraz Hx
 
