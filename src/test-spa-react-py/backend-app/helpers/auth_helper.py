@@ -61,8 +61,11 @@ class AuthHelper:
     def authenticate_user(self, username: str, password: str) -> Optional[User]:
         """Uwierzytelnianie użytkownika"""
         # Pobieranie użytkownika z bazy danych po nazwie użytkownika lub emailu
-        statement = select(User).where(User.username == username | User.email == username)
+        statement = select(User).where(User.username == username)
         user = self.session.exec(statement).first()
+        if not user:
+            statement = select(User).where(User.email == username)
+            user = self.session.exec(statement).first()
         if not user or not self.verify_password(password, user.hashed_password):
             return None
         return user
