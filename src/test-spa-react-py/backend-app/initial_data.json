@@ -1,0 +1,32 @@
+{
+    "user_roles": [
+        {
+            "name": "admin",
+            "description": "Administrator systemu - może tworzyć i usuwać użytkowników, postaci, itd., może tworzyć tokeny tworzenia konta"
+        },
+        {
+            "name": "user",
+            "description": "Użytkownik systemu - może tworzyć postaci, itd."
+        }
+    ],
+    "character_classes": [
+        {
+            "id": 1,
+            "name": "Anioł",
+            "description": "Leżysz w piachu Świata Apokalipsy, z akami na wierzchu. O czyją pomoc się modlisz? Bogów? Dawno odeszli. Twoich przyjaciół? To same dupki, inaczej nie leżałbyś teraz tutaj. A może chcesz do mamusi? Jest kochana, ale nie wpakuje ci flaków z powrotem do brzucha. Modlisz się o kogoś, obojętnie kogo, z igłą, nitką i sześciopakiem morfny. A kiedy wreszcie się zjawi, zdaje się być aniołem.",
+            "special_move": "Jeśli ty i inna postać uprawiacie seks, twoja Hx z nią na twojej karcie automatycznie skacze do +3, a jej Hx z tobą na jej karcie automatycznie skacze o +1. Jeśli dzięki temu osiągnie Hx+4, resetuje ją do Hx+1 i jak zawsze zaznacza doświadczenie"
+        }
+    ],
+    "dedicated_moves": [
+        {
+            "name": "Szósty zmysł",
+            "description": "Gdy otwierasz swój mózg na psychiczny wir, rzuć+spryt zamiast rzucać+dziw.",
+            "base_character_class_id": 1
+        },
+        {
+            "name": "Własna klinika",
+            "description": "posiadasz własny szpital, warsztat wyposażony w aparaturę do podtrzymywania życia, laboratorium chemiczne oraz dwuosobowy personel (ekipa) (Shigusa i Mox, pasuje?). W klinice możesz pracować nad pacjentami tak, jak tekknik pracuje nad technologią (por.).",
+            "base_character_class_id": 1
+        }
+    ]
+}
