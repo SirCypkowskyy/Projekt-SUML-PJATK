@@ -4,6 +4,15 @@ services:
     build:
       context: ./backend-app
       dockerfile: Dockerfile
+    environment:
+      - MODE=production
+      - PROJECT_NAME=${PROJECT_NAME}
+      - PROJECT_VERSION=${PROJECT_VERSION}
+      - PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      - BASE_ADMIN_PASSWORD=${BASE_ADMIN_PASSWORD}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
     networks:
       - suml-app-network
   vite-client-suml:

@@ -1,6 +1,7 @@
 import os
 import json
 from typing import Dict, List
+import typing as ty
 from pydantic import AnyHttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from enum import Enum
@@ -53,7 +54,7 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: str
     @field_validator("BACKEND_CORS_ORIGINS")
-    def assemble_cors_origins(cls, v: str | list[str]) -> list[str] | str:
+    def assemble_cors_origins(cls, v: ty.Union[str, list[str]]) -> ty.Union[list[str], str]:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
@@ -63,7 +64,7 @@ class Settings(BaseSettings):
     @property
     def initial_data(self) -> Dict:
         """Wczytuje dane początkowe z pliku JSON"""
-        json_path = os.path.join(os.path.dirname(__file__), '~/sumlapp/initial_data.json')
+        json_path = './initial_data.json'
         try:
             with open(json_path, 'r', encoding='utf-8') as file:
                 return json.load(file)
@@ -73,10 +74,12 @@ class Settings(BaseSettings):
                 "character_classes": [],
                 "dedicated_moves": []
             }
-
-    model_config = SettingsConfigDict(
-        case_sensitive=True, env_file=os.path.expanduser("~/sumlapp/.env")
-    )
+            
+    # Tylko dev
+    if MODE == ModeEnum.development:
+        model_config = SettingsConfigDict(
+            case_sensitive=True, env_file=os.path.expanduser("~/sumlapp/.env")
+        )
 
 
 settings = Settings()
