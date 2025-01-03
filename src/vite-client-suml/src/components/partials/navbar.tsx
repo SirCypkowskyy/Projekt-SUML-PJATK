@@ -1,9 +1,23 @@
 import { cn } from "@/lib/utils";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/providers/auth-provider";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function Navbar({ className }: { className?: string }) {
     const { isAuthenticated, user } = useAuth();
+    const navigate = useNavigate();
+
+    const { logout: logoutAuth } = useAuth();
+    const logout = async () => {
+        await logoutAuth().then(() => {
+            toast.success("Logged out successfully");
+            // przekierowanie po 3 sekundach
+            setTimeout(() => {
+                navigate({ to: "/" });
+            }, 3000);
+        });
+    }
 
     return (
         <div className={cn("", className)}>
@@ -29,9 +43,9 @@ export function Navbar({ className }: { className?: string }) {
                 </Link>
                 {isAuthenticated ? (
                     <>
-                        <Link href="/logout">
+                        <Button onClick={logout}>
                             Logout
-                        </Link>
+                        </Button>
                         <Link href="/profile">
                             Profile
                         </Link>

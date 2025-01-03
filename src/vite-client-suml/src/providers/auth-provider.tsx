@@ -1,61 +1,20 @@
-import { createContext, useContext } from "react";
-import { $api } from "@/lib/api/clients";
-import { useCookies } from "react-cookie";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { components } from "@/lib/api/v1";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCookies } from "react-cookie";
 
 type User = components["schemas"]["CurrentUserResponseSchema"];
 
-/**
- * @interface AuthContextType
- * @property {User | null} user - Aktualny użytkownik
- * @property {boolean} isAuthenticated - Czy użytkownik jest zalogowany
- * @property {boolean} isLoading - Czy obecnie trwa ładowanie danych
- * @property {(username: string, password: string) => Promise<void>} login - Funkcja logowania
- * @property {() => Promise<void>} logout - Funkcja wylogowania
- * @property {() => Promise<void>} refreshAuth - Funkcja odświeżania autoryzacji
- */
 interface AuthContextType {
-    /**
-     * Aktualny użytkownik
-     * @type {User | null}
-     */
     user: User | null;
-    /**
-     * Czy użytkownik jest zalogowany
-     * @type {boolean}
-     */
     isAuthenticated: boolean;
-    /**
-     * Czy obecnie trwa ładowanie danych
-     * @type {boolean}
-     */
     isLoading: boolean;
-    /**
-     * Funkcja logowania
-     * @param {string} username - Nazwa użytkownika
-     * @param {string} password - Hasło
-     * @returns {Promise<void>}
-     */
-    login: (username: string, password: string) => Promise<void>;
-    /**
-     * Funkcja wylogowania
-     * @returns {Promise<void>}
-     */
+    login: (username: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
-    /**
-     * Funkcja odświeżania autoryzacji
-     * @returns {Promise<void>}
-     */
     refreshAuth: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-/**
- * Hook do pobierania kontekstu autoryzacji
- * @returns {AuthContextType}
- */
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -64,107 +23,97 @@ export const useAuth = () => {
     return context;
 };
 
-/**
- * Komponent dostarczający kontekst autoryzacji
- * @param {React.ReactNode} children - Dzieci
- * @returns {React.ReactNode}
- */
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
-    const queryClient = useQueryClient();
+    const [cookies] = useCookies(['access_token']);
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    /**
-     * Pobieranie aktualnego użytkownika
-     * @type {QueryObserverBaseResult<User | null, Error>}
-     */
-    const { data: user, isLoading } = $api.useQuery(
-        "get",
-        "/api/v1/auth/me",
-        {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            params: {
-                cookie: cookies.access_token,
-            }
-        }
-    );
-
-    const loginMutation = $api.useMutation("post", "/api/v1/auth/login");
-
-    const login = async (username: string, password: string) => {
+    const fetchUser = async () => {
         try {
-            const response = await loginMutation.mutateAsync({
+            const response = await fetch("/api/v1/auth/me", {
+                method: "GET",
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: {
-                    username,
-                    password,
-                }
+                credentials: 'include'
             });
 
-            await setCookie('access_token', response.access_token, { path: '/' });
-            await setCookie('refresh_token', response.refresh_token, { path: '/' });
+            if (response.ok) {
+                const userData = await response.json();
+                setUser(userData);
+                return userData;
+            }
 
-            // Odśwież dane użytkownika po zalogowaniu
-            await queryClient.invalidateQueries({ queryKey: ["/api/v1/auth/me"] });
-            
-            return response;
-        } catch (error) {
-            throw error;
+            setUser(null);
+        } catch {
+            setUser(null);
+        } finally {
+            setIsLoading(false);
         }
+        return null;
+    };
+
+    // Próba pobrania użytkownika tylko gdy jest access_token
+    useEffect(() => {
+        fetchUser().then(() => {
+            setIsLoading(false);
+        });
+    }, [cookies.access_token]);
+
+    const login = async (username: string, password: string) => {
+        const response = await fetch("/api/v1/auth/login", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+            credentials: 'include'
+        });
+        console.log(response);
+        if (response.status !== 200) {
+            console.log("Login failed");
+            return false;
+        }
+
+        // Po udanym logowaniu pobierz dane użytkownika
+        return await fetchUser() !== null;
     };
 
     const logout = async () => {
-        const response = await $api.useQuery(
-            "post",
-            "/api/v1/auth/logout",
-            {
-                params: {
-                    cookie: cookies.access_token,
-                }
-            }
-        );
+        const response = await fetch("/api/v1/auth/logout", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        });
 
-        while (response.isLoading) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-
-        if (response.error) {
+        if (!response.ok) {
             throw new Error("Failed to logout");
         }
 
-        removeCookie('access_token', { path: '/' });
-        removeCookie('refresh_token', { path: '/' });
-        // queryClient.setQueryData(['currentUser'], null);
-        // queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+        setUser(null);
     };
 
     const refreshAuth = async () => {
-        const response = await $api.useQuery(
-            "post",
-            "/api/v1/auth/refresh",
-            {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                params: {
-                    cookie: cookies.refresh_token,
-                }
-            }
-        );
-        while (response.isLoading) {
-            await new Promise(resolve => setTimeout(resolve, 100));
+        const response = await fetch("/api/v1/auth/refresh", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to refresh auth");
         }
 
-        if (response.error) throw new Error("Failed to refresh auth");
-
-        // queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+        // Po odświeżeniu tokenu pobierz dane użytkownika
+        await fetchUser();
     };
 
     const value = {
-        user: user ?? null,
+        user,
         isAuthenticated: !!user,
         isLoading,
         login,

@@ -10,7 +10,7 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
 
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -18,15 +18,17 @@ export function LoginForm({
     const formData = new FormData(e.target as HTMLFormElement);
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
-    login(username, password).then(() => {
-      try {
-        if (isAuthenticated)
+    login(username, password).then((successfull) => {
+      // sprawdzenie, czy jest authenticated po 0,5 sekundy
+      if (successfull)
+      {
+        toast.success("Logged in successfully");
+        setTimeout(() => {
           navigate({ to: "/dashboard" });
-        else
-          toast.error("Login failed, reason: unknown");
-      } catch (error) {
-        toast.error("Login failed, reason: " + error);
+        }, 500);
       }
+      else
+        toast.error("Login failed, reason: unknown");
     });
   };
 

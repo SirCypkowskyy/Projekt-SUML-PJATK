@@ -21,6 +21,7 @@ from typing import Annotated
 from schemas.token_schemas import UserCreationTokenResponse
 from sqlalchemy import desc, asc
 from data.models import UserRole
+from core.config import settings
 
 # Stałe dla nazw ciasteczek
 ACCESS_TOKEN_COOKIE = "access_token"
@@ -49,6 +50,29 @@ class LoginRequest(BaseModel):
 
 router = APIRouter()
 
+def set_auth_cookies(response: Response, access_token: str, refresh_token: str, auth_helper: AuthHelper):
+    """Helper function to set authentication cookies with proper security settings"""
+    response.set_cookie(
+        key=ACCESS_TOKEN_COOKIE,
+        value=access_token,
+        httponly=True,
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
+        max_age=60 * auth_helper.access_token_expire_minutes,
+        domain=settings.COOKIE_DOMAIN,
+        path="/"
+    )
+    response.set_cookie(
+        key=REFRESH_TOKEN_COOKIE,
+        value=refresh_token,
+        httponly=True,
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
+        max_age=60 * auth_helper.refresh_token_expire_minutes,
+        domain=settings.COOKIE_DOMAIN,
+        path="/"
+    )
+
 @router.post("/login", response_model=Token)
 def login(
     request: LoginRequest,
@@ -63,25 +87,14 @@ def login(
         )
     
     tokens = auth_helper.get_auth_tokens(user)
-    
-    # Ustawiamy ciasteczka z tokenami
-    response = JSONResponse(content={"access_token": tokens["access_token"], "token_type": "bearer", "refresh_token": tokens["refresh_token"]})
-    response.set_cookie(
-        key=ACCESS_TOKEN_COOKIE,
-        value=tokens["access_token"],
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        max_age=60 * auth_helper.access_token_expire_minutes
+    response = JSONResponse(
+        content={
+            "access_token": tokens["access_token"],
+            "token_type": "bearer",
+            "refresh_token": tokens["refresh_token"]
+        }
     )
-    response.set_cookie(
-        key=REFRESH_TOKEN_COOKIE,
-        value=tokens["refresh_token"],
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        max_age=60 * auth_helper.refresh_token_expire_minutes
-    )
+    set_auth_cookies(response, tokens["access_token"], tokens["refresh_token"], auth_helper)
     return response
 
 @router.post("/refresh")
@@ -107,28 +120,22 @@ def refresh_token(
     new_access_token = auth_helper.create_access_token(user_id)
     new_refresh_token = auth_helper.create_refresh_token(user_id)
     
-    response.set_cookie(
-        key=ACCESS_TOKEN_COOKIE,
-        value=new_access_token,
-        httponly=True,
-        max_age=60 * auth_helper.access_token_expire_minutes,
-        samesite="lax"
-    )
-    response.set_cookie(
-        key=REFRESH_TOKEN_COOKIE,
-        value=new_refresh_token,
-        httponly=True,
-        max_age=60 * auth_helper.refresh_token_expire_minutes,
-        samesite="lax"
-    )
-    
+    set_auth_cookies(response, new_access_token, new_refresh_token, auth_helper)
     return {"message": "Tokeny odświeżone"}
 
 @router.post("/logout", response_model=LogoutResponse)
 def logout(response: Response):
     """Wylogowuje użytkownika"""
-    response.delete_cookie(key=ACCESS_TOKEN_COOKIE)
-    response.delete_cookie(key=REFRESH_TOKEN_COOKIE)
+    response.delete_cookie(
+        key=ACCESS_TOKEN_COOKIE,
+        domain=settings.COOKIE_DOMAIN,
+        path="/"
+    )
+    response.delete_cookie(
+        key=REFRESH_TOKEN_COOKIE,
+        domain=settings.COOKIE_DOMAIN,
+        path="/"
+    )
     return LogoutResponse(message="Wylogowano pomyślnie")
 
 @router.get("/me", response_model=CurrentUserResponseSchema)
