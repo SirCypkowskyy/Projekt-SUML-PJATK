@@ -32,16 +32,30 @@ class Token(BaseModel):
     """Token dostępu"""
     token_type: str
     """Typ tokenu"""
+    refresh_token: str
+    """Token odświeżający"""
+
+class LogoutResponse(BaseModel):
+    """Model odpowiedzi na wylogowanie"""
+    message: str
+    """Wiadomość"""
+
+class LoginRequest(BaseModel):
+    """Model żądania logowania"""
+    username: str
+    """Nazwa użytkownika"""
+    password: str
+    """Hasło"""
 
 router = APIRouter()
 
 @router.post("/login", response_model=Token)
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    request: LoginRequest,
     auth_helper: AuthHelper = Depends(get_auth_helper)
 ):
     """Loguje użytkownika"""
-    user = auth_helper.authenticate_user(form_data.username, form_data.password)
+    user = auth_helper.authenticate_user(request.username, request.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -51,15 +65,23 @@ def login(
     tokens = auth_helper.get_auth_tokens(user)
     
     # Ustawiamy ciasteczka z tokenami
-    response = JSONResponse(content={"access_token": tokens["access_token"], "token_type": "bearer"})
+    response = JSONResponse(content={"access_token": tokens["access_token"], "token_type": "bearer", "refresh_token": tokens["refresh_token"]})
     response.set_cookie(
         key=ACCESS_TOKEN_COOKIE,
         value=tokens["access_token"],
         httponly=True,
         secure=True,
-        samesite="lax"
+        samesite="lax",
+        max_age=60 * auth_helper.access_token_expire_minutes
     )
-    
+    response.set_cookie(
+        key=REFRESH_TOKEN_COOKIE,
+        value=tokens["refresh_token"],
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=60 * auth_helper.refresh_token_expire_minutes
+    )
     return response
 
 @router.post("/refresh")
@@ -102,12 +124,12 @@ def refresh_token(
     
     return {"message": "Tokeny odświeżone"}
 
-@router.post("/logout")
+@router.post("/logout", response_model=LogoutResponse)
 def logout(response: Response):
     """Wylogowuje użytkownika"""
     response.delete_cookie(key=ACCESS_TOKEN_COOKIE)
     response.delete_cookie(key=REFRESH_TOKEN_COOKIE)
-    return {"message": "Wylogowano pomyślnie"}
+    return LogoutResponse(message="Wylogowano pomyślnie")
 
 @router.get("/me", response_model=CurrentUserResponseSchema)
 def get_current_user(
