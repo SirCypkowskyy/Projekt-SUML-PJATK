@@ -89,28 +89,3 @@ Wybierz też 2 sztuki konkretnej broni:
 2. Wygląd (wybierz 1 lub 2): opływowy kształt, vintage, mocno odchudzony, rycząca bestia, masywny, muskularny, szpanerski, luksusowy.
 3. Słabości (wybierz 1): wolny, zaniedbany, cholernie dużo pali, drobny, niestabilny, kapryśny, zawodny.
 4. Jeśli z jakiegoś powodu potrzebujesz parametrów swojego motocyklu (domyślnie nie potrzebujesz ich), prezentują się one następująco: moc+1, wygląd+1, 1-pancerza, słabość+1.
-
-## HX
-
-Wszyscy po kolei przedstawiają swoje postacie. Podają imię, wygląd i charakter. Zrób to.
-
-Zanotuj imiona pozostałych postaci graczy.
-
-Po kolei ustalcie Hx. Gdy nadejdzie twoja
-kolej:
-
-- Powiedz wszystkim, żeby zapisali Hx+1. Jesteś nieskomplikowaną osobą.
-
-W turze pozostałych graczy:
-
-- Jedna z postaci postawiła się tobie i twoim ludziom. Do wartości podanej przez tego gracza dodaj +1 i zapisz je obok imienia jego postaci na swojej karcie.
-- Od wartości Hx podanych przez pozostałych graczy odejmij −1 i zapisz obok imion
-postaci na swojej karcie. Domyślnie niespecjalnie dbasz o, tych tam, ludzi.
-
-Na koniec sprawdź, która postać ma najwyższą wartość Hx na twojej karcie. Zapytaj osobę prowadzącą tę postać, która cecha twojej postaci jest dla niej najbardziej interesująca, i wyróżnij tę cechę. MC poda ci drugą cechę, którą masz wyróżnić.
-
-## ROZWÓJ
-
-Kiedy rzucasz na wyróżnioną cechę oraz gdy resetujesz Hx z inną postacią, zawsze zaznacz jedno kółko doświadczenia. Gdy zaznaczysz wszystkie 5 kółek doświadczenia, rozwiń swoją postać i wymaż zaznaczone kółka.
-
-Za każdym razem, gdy rozwijasz postać, wybierz jedną z poniższych opcji. Zaznacz ją na liście, nie możesz wybrać jej ponownie.
