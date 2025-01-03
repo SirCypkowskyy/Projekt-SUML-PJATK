@@ -41,7 +41,7 @@
     - [ ] Konfiguracja LangChain
     - [ ] Prompt engineering dla generowania pytań
     - [ ] Prompt engineering dla generowania opisów
-    - [ ] Prompt engineering dla sugerowania statystyk, umiejętności, itd.
+    - [ ] Prompt engineering dla sugerowania klasy postaci, cech, ruchów (umiejętności), itd.
 - [ ] Dodanie rate-limitingu dla endpointów, które mogą być używane przez klienta
 - [ ] Generowanie PDF
     - [ ] Szablon karty postaci
