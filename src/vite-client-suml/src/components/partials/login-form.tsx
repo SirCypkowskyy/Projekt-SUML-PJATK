@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@/providers/auth-provider";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { Link } from "lucide-react";
 export function LoginForm({
   className,
   ...props
@@ -63,9 +64,9 @@ export function LoginForm({
       </div>
       <div className="text-center text-sm">
         Don&apos;t have an account?{" "}
-        <a href="#" className="underline underline-offset-4">
+        <Link to="/register" className="underline underline-offset-4">
           Sign up
-        </a>
+        </Link>
       </div>
     </form>
   )

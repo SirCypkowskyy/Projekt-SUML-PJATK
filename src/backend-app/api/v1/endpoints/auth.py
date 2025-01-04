@@ -178,44 +178,45 @@ def register(
             detail="Użytkownik o podanym adresie email już istnieje"
         )
     
+    if not account_creation_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Brak tokenu tworzenia konta w zapytaniu - nie można utworzyć użytkownika"
+        )
+   
+    
+    # Sprawdzenie czy token tworzenia konta jest poprawny
     user_data = user.model_dump()
     user_data["hashed_password"] = auth_helper.get_password_hash(user_data.pop("password"))
 
     # Dodanie domyślnej roli użytkownika
     user_data["role_id"] = UserRoleEnum.USER.value
     
-    # Sprawdzenie czy token tworzenia konta jest poprawny
-    if account_creation_token:
-        token = auth_helper.session.get(UserCreationToken, account_creation_token)
-        if not token:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Nieprawidłowy token tworzenia konta"
-            )
-        
-        # Sprawdzenie czy token nie wygasł
-        if token.expires_at < datetime.now():
-            # Usuwamy przeterminowany token
-            auth_helper.session.delete(token)
-            auth_helper.session.commit()
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Token wygasł i został usunięty"
-            )
-        
-        # Sprawdzenie czy token nie został już użyty maksymalną liczbę razy
-        if token.uses >= token.max_uses:
-            # Usuwamy wykorzystany token
-            auth_helper.session.delete(token)
-            auth_helper.session.commit()
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Token został już wykorzystany maksymalną liczbę razy i został usunięty"
-            )
-    else:
+    token = auth_helper.session.get(UserCreationToken, account_creation_token)
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
-            detail="Brak tokenu tworzenia konta w zapytaniu - nie można utworzyć użytkownika"
+            detail="Nieprawidłowy token tworzenia konta"
+        )
+        
+    # Sprawdzenie czy token nie wygasł
+    if token.expires_at < datetime.now():
+        # Usuwamy przeterminowany token
+        auth_helper.session.delete(token)
+        auth_helper.session.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Token wygasł i został usunięty"
+        )
+        
+    # Sprawdzenie czy token nie został już użyty maksymalną liczbę razy
+    if token.uses >= token.max_uses:
+        # Usuwamy wykorzystany token
+        auth_helper.session.delete(token)
+        auth_helper.session.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Token został już wykorzystany maksymalną liczbę razy i został usunięty"
         )
         
     try:

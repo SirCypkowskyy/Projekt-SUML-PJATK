@@ -23,7 +23,7 @@ export function Navbar({ className }: { className?: string }) {
         <div className={cn("", className)}>
             {/* AppName */}
             <Link href="/" className="text-2xl font-bold">
-                AppName
+                Apocalypse Guide
             </Link>
             <div className="flex items-center justify-between gap-4">
                 {!isAuthenticated ? (
@@ -56,9 +56,14 @@ export function Navbar({ className }: { className?: string }) {
                         ) : null}
                     </>
                 ) : (
-                    <Link href="/login">
-                        Login
+                    <>
+                        <Link href="/login">
+                            Login
+                        </Link>
+                        <Link href="/register">
+                        Register
                     </Link>
+                    </>
                 )}
             </div>
         </div>

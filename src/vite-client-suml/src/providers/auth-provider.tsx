@@ -11,10 +11,12 @@ interface AuthContextType {
     login: (username: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
     refreshAuth: () => Promise<void>;
+    register: (email: string, username: string, password: string, accountCreationToken: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+/* eslint-disable */
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -95,6 +97,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(null);
     };
 
+    const register = async (email: string, username: string, password: string, accountCreationToken: string) => {
+        const response = await fetch("/api/v1/auth/register?account_creation_token=" + accountCreationToken, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, username, password }),
+            credentials: 'include'
+        });
+
+        if (response.status !== 200) {
+            console.log("Register failed, reason: " + response.text);
+            return false;
+        }
+
+        // Po udanej rejestracji spróbujemy się zalogować
+        return await login(username, password);
+    };
+
     const refreshAuth = async () => {
         const response = await fetch("/api/v1/auth/refresh", {
             method: "POST",
@@ -119,6 +140,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         logout,
         refreshAuth,
+        register,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
