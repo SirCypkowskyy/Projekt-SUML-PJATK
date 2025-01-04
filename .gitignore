@@ -200,3 +200,6 @@ stats.html
 
 **/*.log
 **/dist
+src/vite-client-suml/src/.env.prod
+src/.env.prod
+src/backend-app/database.db

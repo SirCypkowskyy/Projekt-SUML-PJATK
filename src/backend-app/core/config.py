@@ -64,6 +64,11 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./database.db"
     """URL do bazy danych"""
 
+    # Cookie settings
+    COOKIE_DOMAIN: str = "localhost" if MODE == ModeEnum.development else "suml.cyprian-gburek.pl"
+    COOKIE_SECURE: bool = True
+    COOKIE_SAMESITE: str = "none" if MODE == ModeEnum.development else "lax"
+
     @property
     def initial_data(self) -> Dict:
         """Wczytuje dane początkowe z pliku JSON"""

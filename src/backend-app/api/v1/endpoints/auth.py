@@ -21,6 +21,7 @@ from typing import Annotated
 from schemas.token_schemas import UserCreationTokenResponse
 from sqlalchemy import desc, asc
 from data.models import UserRole
+from core.config import settings
 
 # Stałe dla nazw ciasteczek
 ACCESS_TOKEN_COOKIE = "access_token"
@@ -32,16 +33,60 @@ class Token(BaseModel):
     """Token dostępu"""
     token_type: str
     """Typ tokenu"""
+    refresh_token: str
+    """Token odświeżający"""
+
+class LogoutResponse(BaseModel):
+    """Model odpowiedzi na wylogowanie"""
+    message: str
+    """Wiadomość"""
+
+class LoginRequest(BaseModel):
+    """Model żądania logowania"""
+    username: str
+    """Nazwa użytkownika"""
+    password: str
+    """Hasło"""
+
+class ChangePasswordRequest(BaseModel):
+    """Model żądania zmiany hasła"""
+    current_password: str
+    """Aktualne hasło"""
+    new_password: str
+    """Nowe hasło"""
 
 router = APIRouter()
 
+def set_auth_cookies(response: Response, access_token: str, refresh_token: str, auth_helper: AuthHelper):
+    """Helper function to set authentication cookies with proper security settings"""
+    response.set_cookie(
+        key=ACCESS_TOKEN_COOKIE,
+        value=access_token,
+        httponly=True,
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
+        max_age=60 * auth_helper.access_token_expire_minutes,
+        domain=settings.COOKIE_DOMAIN,
+        path="/"
+    )
+    response.set_cookie(
+        key=REFRESH_TOKEN_COOKIE,
+        value=refresh_token,
+        httponly=True,
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
+        max_age=60 * auth_helper.refresh_token_expire_minutes,
+        domain=settings.COOKIE_DOMAIN,
+        path="/"
+    )
+
 @router.post("/login", response_model=Token)
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    request: LoginRequest,
     auth_helper: AuthHelper = Depends(get_auth_helper)
 ):
     """Loguje użytkownika"""
-    user = auth_helper.authenticate_user(form_data.username, form_data.password)
+    user = auth_helper.authenticate_user(request.username, request.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -49,17 +94,14 @@ def login(
         )
     
     tokens = auth_helper.get_auth_tokens(user)
-    
-    # Ustawiamy ciasteczka z tokenami
-    response = JSONResponse(content={"access_token": tokens["access_token"], "token_type": "bearer"})
-    response.set_cookie(
-        key=ACCESS_TOKEN_COOKIE,
-        value=tokens["access_token"],
-        httponly=True,
-        secure=True,
-        samesite="lax"
+    response = JSONResponse(
+        content={
+            "access_token": tokens["access_token"],
+            "token_type": "bearer",
+            "refresh_token": tokens["refresh_token"]
+        }
     )
-    
+    set_auth_cookies(response, tokens["access_token"], tokens["refresh_token"], auth_helper)
     return response
 
 @router.post("/refresh")
@@ -85,29 +127,23 @@ def refresh_token(
     new_access_token = auth_helper.create_access_token(user_id)
     new_refresh_token = auth_helper.create_refresh_token(user_id)
     
-    response.set_cookie(
-        key=ACCESS_TOKEN_COOKIE,
-        value=new_access_token,
-        httponly=True,
-        max_age=60 * auth_helper.access_token_expire_minutes,
-        samesite="lax"
-    )
-    response.set_cookie(
-        key=REFRESH_TOKEN_COOKIE,
-        value=new_refresh_token,
-        httponly=True,
-        max_age=60 * auth_helper.refresh_token_expire_minutes,
-        samesite="lax"
-    )
-    
+    set_auth_cookies(response, new_access_token, new_refresh_token, auth_helper)
     return {"message": "Tokeny odświeżone"}
 
-@router.post("/logout")
+@router.post("/logout", response_model=LogoutResponse)
 def logout(response: Response):
     """Wylogowuje użytkownika"""
-    response.delete_cookie(key=ACCESS_TOKEN_COOKIE)
-    response.delete_cookie(key=REFRESH_TOKEN_COOKIE)
-    return {"message": "Wylogowano pomyślnie"}
+    response.delete_cookie(
+        key=ACCESS_TOKEN_COOKIE,
+        domain=settings.COOKIE_DOMAIN,
+        path="/"
+    )
+    response.delete_cookie(
+        key=REFRESH_TOKEN_COOKIE,
+        domain=settings.COOKIE_DOMAIN,
+        path="/"
+    )
+    return LogoutResponse(message="Wylogowano pomyślnie")
 
 @router.get("/me", response_model=CurrentUserResponseSchema)
 def get_current_user(
@@ -149,44 +185,45 @@ def register(
             detail="Użytkownik o podanym adresie email już istnieje"
         )
     
+    if not account_creation_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Brak tokenu tworzenia konta w zapytaniu - nie można utworzyć użytkownika"
+        )
+   
+    
+    # Sprawdzenie czy token tworzenia konta jest poprawny
     user_data = user.model_dump()
     user_data["hashed_password"] = auth_helper.get_password_hash(user_data.pop("password"))
 
     # Dodanie domyślnej roli użytkownika
     user_data["role_id"] = UserRoleEnum.USER.value
     
-    # Sprawdzenie czy token tworzenia konta jest poprawny
-    if account_creation_token:
-        token = auth_helper.session.get(UserCreationToken, account_creation_token)
-        if not token:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Nieprawidłowy token tworzenia konta"
-            )
-        
-        # Sprawdzenie czy token nie wygasł
-        if token.expires_at < datetime.now():
-            # Usuwamy przeterminowany token
-            auth_helper.session.delete(token)
-            auth_helper.session.commit()
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Token wygasł i został usunięty"
-            )
-        
-        # Sprawdzenie czy token nie został już użyty maksymalną liczbę razy
-        if token.uses >= token.max_uses:
-            # Usuwamy wykorzystany token
-            auth_helper.session.delete(token)
-            auth_helper.session.commit()
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Token został już wykorzystany maksymalną liczbę razy i został usunięty"
-            )
-    else:
+    token = auth_helper.session.get(UserCreationToken, account_creation_token)
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
-            detail="Brak tokenu tworzenia konta w zapytaniu - nie można utworzyć użytkownika"
+            detail="Nieprawidłowy token tworzenia konta"
+        )
+        
+    # Sprawdzenie czy token nie wygasł
+    if token.expires_at < datetime.now():
+        # Usuwamy przeterminowany token
+        auth_helper.session.delete(token)
+        auth_helper.session.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Token wygasł i został usunięty"
+        )
+        
+    # Sprawdzenie czy token nie został już użyty maksymalną liczbę razy
+    if token.uses >= token.max_uses:
+        # Usuwamy wykorzystany token
+        auth_helper.session.delete(token)
+        auth_helper.session.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Token został już wykorzystany maksymalną liczbę razy i został usunięty"
         )
         
     try:
@@ -485,4 +522,84 @@ def update_user_role(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Błąd podczas aktualizacji roli: {str(e)}"
+        )
+
+@router.post("/change-password", status_code=status.HTTP_200_OK)
+def change_password(
+    password_change: ChangePasswordRequest,
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth_helper: AuthHelper = Depends(get_auth_helper)
+):
+    """Zmienia hasło zalogowanego użytkownika"""
+    # Sprawdzamy czy użytkownik jest zalogowany i pobieramy jego dane
+    user = auth_helper.verify_logged_in_user(access_token)
+    
+    # Weryfikujemy czy aktualne hasło jest poprawne
+    if not auth_helper.verify_password(password_change.current_password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowe aktualne hasło"
+        )
+    
+    try:
+        # Sprawdźmy, czy nowe hasło jest poprawne
+        if password_change.new_password == password_change.current_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Nowe hasło nie może być takie samo jak aktualne"
+            )
+        
+        # Nowe hasło musi mieć minimum 3 znaki
+        if len(password_change.new_password) < 3:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Nowe hasło musi mieć minimum 3 znaki"
+            )
+        
+        # Haszujemy i zapisujemy nowe hasło
+        user.hashed_password = auth_helper.get_password_hash(password_change.new_password)
+        auth_helper.session.add(user)
+        auth_helper.session.commit()
+        
+        return {"message": "Hasło zostało zmienione pomyślnie"}
+    except Exception as e:
+        auth_helper.session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Błąd podczas zmiany hasła: {str(e)}"
+        )
+
+@router.put("/change-username", status_code=status.HTTP_200_OK)
+def change_username(
+    new_username: str = Query(..., min_length=3, max_length=50),
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth_helper: AuthHelper = Depends(get_auth_helper)
+):
+    """Zmienia nazwę zalogowanego użytkownika"""
+    # Sprawdzamy czy użytkownik jest zalogowany i pobieramy jego dane
+    user = auth_helper.verify_logged_in_user(access_token)
+    
+    # Sprawdzamy czy nazwa użytkownika jest już zajęta
+    existing_user = auth_helper.session.exec(
+        select(User).where(User.username == new_username)
+    ).first()
+    
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Użytkownik o podanej nazwie już istnieje"
+        )
+    
+    try:
+        # Aktualizujemy nazwę użytkownika
+        user.username = new_username
+        auth_helper.session.add(user)
+        auth_helper.session.commit()
+        
+        return {"message": "Nazwa użytkownika została zmieniona pomyślnie"}
+    except Exception as e:
+        auth_helper.session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Błąd podczas zmiany nazwy użytkownika: {str(e)}"
         )
