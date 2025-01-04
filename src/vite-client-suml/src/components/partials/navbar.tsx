@@ -21,7 +21,9 @@ export function Navbar({ className }: { className?: string }) {
       toast.success("Logged out successfully");
       // przekierowanie po 3 sekundach
       setTimeout(() => {
-        navigate({ to: "/" });
+        navigate({
+          to: "/",
+        });
       }, 3000);
     });
   };
@@ -30,7 +32,7 @@ export function Navbar({ className }: { className?: string }) {
     <div className={cn("", className)}>
       {/* AppName */}
       <Link
-        href={isAuthenticated ? "/dashboard" : "/"}
+        to={isAuthenticated ? "/dashboard" : "/"}
         className="text-2xl font-bold px-1"
       >
         Przewodnik Apokalipsy
@@ -43,25 +45,25 @@ export function Navbar({ className }: { className?: string }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="pt-2 gap-2">
             <DropdownMenuItem className="w-full py-1">
-              <Link href="/about">O nas</Link>
+              <Link to={"/about"}>O nas</Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="w-full py-1">
-              <Link href="/contact">Kontakt</Link>
+              <Link to={"/contact"}>Kontakt</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         {isAuthenticated ? (
           <>
-            <Link href="/profile">Profil</Link>
+            <Link  to={"/profile"}>Profil</Link>
             {user?.role_id === 1 || user?.role_id === 0 ? (
-              <Link href="/admin">Admin</Link>
+              <Link to={"/admin"}>Admin</Link>
             ) : null}
             <Button onClick={logout}>Wyloguj się</Button>
           </>
         ) : (
           <>
-            <Link href="/login">Zaloguj się</Link>
-            <Link href="/register">Zarejestruj się</Link>
+            <Link to={"/login"}>Zaloguj się</Link>
+            <Link to={"/register"}>Zarejestruj się</Link>
           </>
         )}
       </div>

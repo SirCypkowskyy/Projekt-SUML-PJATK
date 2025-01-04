@@ -21,7 +21,7 @@ function RouteComponent() {
         <div className="mb-2 flex items-center justify-between space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">Twoje Postacie</h1>
           <div className="flex items-center space-x-2">
-            <Link href="/character-creator/"> 
+            <Link to="/character-creator/"> 
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Nowa Postać
@@ -132,7 +132,7 @@ function RouteComponent() {
                   <CardDescription>Popularne operacje</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Link href="/character-creator/">
+                  <Link to="/character-creator/">
                     <Button variant="outline" className="w-full justify-start">
                       <Plus className="mr-2 h-4 w-4" />
                       Stwórz nową postać

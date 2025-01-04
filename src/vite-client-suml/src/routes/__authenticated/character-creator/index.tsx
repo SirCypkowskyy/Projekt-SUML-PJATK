@@ -984,14 +984,10 @@ function RouteComponent() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
-        {/* @ts-expect-error - Błąd compilera React 19 */}
         <Command className="w-full">
           <CommandInput />
-          {/* @ts-expect-error - Błąd compilera React 19 */}
           <CommandList>
-            {/* @ts-expect-error - Błąd compilera React 19 */}
             <CommandEmpty>Nie znaleziono ruchu.</CommandEmpty>
-            {/* @ts-expect-error - Błąd compilera React 19 */}
             <CommandGroup>
               {availableMoves
                 .filter(
@@ -1003,7 +999,6 @@ function RouteComponent() {
                     <Tooltip delayDuration={100}>
                       <TooltipTrigger asChild>
                         <div>
-                          {/* @ts-expect-error - Błąd compilera React 19 */}
                           <CommandItem
                             onSelect={() => {
                               handleMoveSelect(move);
