@@ -13,16 +13,24 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as authenticatedImport } from './routes/__authenticated'
 import { Route as RegisterIndexImport } from './routes/register/index'
 import { Route as LoginIndexImport } from './routes/login/index'
-import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as AboutIndexImport } from './routes/about/index'
+import { Route as authenticatedProfileIndexImport } from './routes/__authenticated/profile/index'
+import { Route as authenticatedDashboardIndexImport } from './routes/__authenticated/dashboard/index'
+import { Route as authenticatedCharacterCreatorIndexImport } from './routes/__authenticated/character-creator/index'
 
 // Create Virtual Routes
 
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
+
+const authenticatedRoute = authenticatedImport.update({
+  id: '/__authenticated',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
@@ -42,17 +50,31 @@ const LoginIndexRoute = LoginIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const DashboardIndexRoute = DashboardIndexImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const AboutIndexRoute = AboutIndexImport.update({
   id: '/about/',
   path: '/about/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const authenticatedProfileIndexRoute = authenticatedProfileIndexImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => authenticatedRoute,
+} as any)
+
+const authenticatedDashboardIndexRoute =
+  authenticatedDashboardIndexImport.update({
+    id: '/dashboard/',
+    path: '/dashboard/',
+    getParentRoute: () => authenticatedRoute,
+  } as any)
+
+const authenticatedCharacterCreatorIndexRoute =
+  authenticatedCharacterCreatorIndexImport.update({
+    id: '/character-creator/',
+    path: '/character-creator/',
+    getParentRoute: () => authenticatedRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -65,18 +87,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/__authenticated': {
+      id: '/__authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof authenticatedImport
+      parentRoute: typeof rootRoute
+    }
     '/about/': {
       id: '/about/'
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof rootRoute
     }
     '/login/': {
@@ -93,57 +115,129 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterIndexImport
       parentRoute: typeof rootRoute
     }
+    '/__authenticated/character-creator/': {
+      id: '/__authenticated/character-creator/'
+      path: '/character-creator'
+      fullPath: '/character-creator'
+      preLoaderRoute: typeof authenticatedCharacterCreatorIndexImport
+      parentRoute: typeof authenticatedImport
+    }
+    '/__authenticated/dashboard/': {
+      id: '/__authenticated/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof authenticatedDashboardIndexImport
+      parentRoute: typeof authenticatedImport
+    }
+    '/__authenticated/profile/': {
+      id: '/__authenticated/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof authenticatedProfileIndexImport
+      parentRoute: typeof authenticatedImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface authenticatedRouteChildren {
+  authenticatedCharacterCreatorIndexRoute: typeof authenticatedCharacterCreatorIndexRoute
+  authenticatedDashboardIndexRoute: typeof authenticatedDashboardIndexRoute
+  authenticatedProfileIndexRoute: typeof authenticatedProfileIndexRoute
+}
+
+const authenticatedRouteChildren: authenticatedRouteChildren = {
+  authenticatedCharacterCreatorIndexRoute:
+    authenticatedCharacterCreatorIndexRoute,
+  authenticatedDashboardIndexRoute: authenticatedDashboardIndexRoute,
+  authenticatedProfileIndexRoute: authenticatedProfileIndexRoute,
+}
+
+const authenticatedRouteWithChildren = authenticatedRoute._addFileChildren(
+  authenticatedRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '': typeof authenticatedRouteWithChildren
   '/about': typeof AboutIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/login': typeof LoginIndexRoute
   '/register': typeof RegisterIndexRoute
+  '/character-creator': typeof authenticatedCharacterCreatorIndexRoute
+  '/dashboard': typeof authenticatedDashboardIndexRoute
+  '/profile': typeof authenticatedProfileIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '': typeof authenticatedRouteWithChildren
   '/about': typeof AboutIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/login': typeof LoginIndexRoute
   '/register': typeof RegisterIndexRoute
+  '/character-creator': typeof authenticatedCharacterCreatorIndexRoute
+  '/dashboard': typeof authenticatedDashboardIndexRoute
+  '/profile': typeof authenticatedProfileIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
+  '/__authenticated': typeof authenticatedRouteWithChildren
   '/about/': typeof AboutIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
   '/login/': typeof LoginIndexRoute
   '/register/': typeof RegisterIndexRoute
+  '/__authenticated/character-creator/': typeof authenticatedCharacterCreatorIndexRoute
+  '/__authenticated/dashboard/': typeof authenticatedDashboardIndexRoute
+  '/__authenticated/profile/': typeof authenticatedProfileIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/dashboard' | '/login' | '/register'
+  fullPaths:
+    | '/'
+    | ''
+    | '/about'
+    | '/login'
+    | '/register'
+    | '/character-creator'
+    | '/dashboard'
+    | '/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/dashboard' | '/login' | '/register'
-  id: '__root__' | '/' | '/about/' | '/dashboard/' | '/login/' | '/register/'
+  to:
+    | '/'
+    | ''
+    | '/about'
+    | '/login'
+    | '/register'
+    | '/character-creator'
+    | '/dashboard'
+    | '/profile'
+  id:
+    | '__root__'
+    | '/'
+    | '/__authenticated'
+    | '/about/'
+    | '/login/'
+    | '/register/'
+    | '/__authenticated/character-creator/'
+    | '/__authenticated/dashboard/'
+    | '/__authenticated/profile/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  authenticatedRoute: typeof authenticatedRouteWithChildren
   AboutIndexRoute: typeof AboutIndexRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   RegisterIndexRoute: typeof RegisterIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  authenticatedRoute: authenticatedRouteWithChildren,
   AboutIndexRoute: AboutIndexRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   RegisterIndexRoute: RegisterIndexRoute,
 }
@@ -159,8 +253,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/__authenticated",
         "/about/",
-        "/dashboard/",
         "/login/",
         "/register/"
       ]
@@ -168,17 +262,34 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.lazy.tsx"
     },
+    "/__authenticated": {
+      "filePath": "__authenticated.tsx",
+      "children": [
+        "/__authenticated/character-creator/",
+        "/__authenticated/dashboard/",
+        "/__authenticated/profile/"
+      ]
+    },
     "/about/": {
       "filePath": "about/index.tsx"
-    },
-    "/dashboard/": {
-      "filePath": "dashboard/index.tsx"
     },
     "/login/": {
       "filePath": "login/index.tsx"
     },
     "/register/": {
       "filePath": "register/index.tsx"
+    },
+    "/__authenticated/character-creator/": {
+      "filePath": "__authenticated/character-creator/index.tsx",
+      "parent": "/__authenticated"
+    },
+    "/__authenticated/dashboard/": {
+      "filePath": "__authenticated/dashboard/index.tsx",
+      "parent": "/__authenticated"
+    },
+    "/__authenticated/profile/": {
+      "filePath": "__authenticated/profile/index.tsx",
+      "parent": "/__authenticated"
     }
   }
 }

@@ -48,6 +48,13 @@ class LoginRequest(BaseModel):
     password: str
     """Hasło"""
 
+class ChangePasswordRequest(BaseModel):
+    """Model żądania zmiany hasła"""
+    current_password: str
+    """Aktualne hasło"""
+    new_password: str
+    """Nowe hasło"""
+
 router = APIRouter()
 
 def set_auth_cookies(response: Response, access_token: str, refresh_token: str, auth_helper: AuthHelper):
@@ -515,4 +522,84 @@ def update_user_role(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Błąd podczas aktualizacji roli: {str(e)}"
+        )
+
+@router.post("/change-password", status_code=status.HTTP_200_OK)
+def change_password(
+    password_change: ChangePasswordRequest,
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth_helper: AuthHelper = Depends(get_auth_helper)
+):
+    """Zmienia hasło zalogowanego użytkownika"""
+    # Sprawdzamy czy użytkownik jest zalogowany i pobieramy jego dane
+    user = auth_helper.verify_logged_in_user(access_token)
+    
+    # Weryfikujemy czy aktualne hasło jest poprawne
+    if not auth_helper.verify_password(password_change.current_password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowe aktualne hasło"
+        )
+    
+    try:
+        # Sprawdźmy, czy nowe hasło jest poprawne
+        if password_change.new_password == password_change.current_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Nowe hasło nie może być takie samo jak aktualne"
+            )
+        
+        # Nowe hasło musi mieć minimum 3 znaki
+        if len(password_change.new_password) < 3:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Nowe hasło musi mieć minimum 3 znaki"
+            )
+        
+        # Haszujemy i zapisujemy nowe hasło
+        user.hashed_password = auth_helper.get_password_hash(password_change.new_password)
+        auth_helper.session.add(user)
+        auth_helper.session.commit()
+        
+        return {"message": "Hasło zostało zmienione pomyślnie"}
+    except Exception as e:
+        auth_helper.session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Błąd podczas zmiany hasła: {str(e)}"
+        )
+
+@router.put("/change-username", status_code=status.HTTP_200_OK)
+def change_username(
+    new_username: str = Query(..., min_length=3, max_length=50),
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth_helper: AuthHelper = Depends(get_auth_helper)
+):
+    """Zmienia nazwę zalogowanego użytkownika"""
+    # Sprawdzamy czy użytkownik jest zalogowany i pobieramy jego dane
+    user = auth_helper.verify_logged_in_user(access_token)
+    
+    # Sprawdzamy czy nazwa użytkownika jest już zajęta
+    existing_user = auth_helper.session.exec(
+        select(User).where(User.username == new_username)
+    ).first()
+    
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Użytkownik o podanej nazwie już istnieje"
+        )
+    
+    try:
+        # Aktualizujemy nazwę użytkownika
+        user.username = new_username
+        auth_helper.session.add(user)
+        auth_helper.session.commit()
+        
+        return {"message": "Nazwa użytkownika została zmieniona pomyślnie"}
+    except Exception as e:
+        auth_helper.session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Błąd podczas zmiany nazwy użytkownika: {str(e)}"
         )

@@ -2,12 +2,38 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useAuth } from "@/providers/auth-provider";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
+// Move schema outside component
+const registrationSchema = z.object({
+  email: z.string().email(),
+  username: z.string().min(3),
+  password: z.string().min(8),
+  account_creation_token: z.string().min(5),
+});
+
+type RegistrationFormValues = z.infer<typeof registrationSchema>;
 
 export function RegisterForm({
   className,
@@ -16,51 +42,35 @@ export function RegisterForm({
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const RegistrationSchema = z.object({
-    email: z.string().email(),
-    username: z.string().min(3),
-    password: z.string().min(8),
-    account_creation_token: z.string().min(5),
+  const form = useForm<RegistrationFormValues>({
+    resolver: zodResolver(registrationSchema),
+    defaultValues: {
+      email: "",
+      username: "",
+      password: "",
+      account_creation_token: "",
+    },
   });
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const email = formData.get("email") as string;
-    const username = formData.get("username") as string;
-    const password = formData.get("password") as string;    
-    const account_creation_token = formData.get(
-      "account_creation_token"
-    ) as string;
-
-    const safeParse = RegistrationSchema.safeParse({ email, username, password, account_creation_token });
-
-    if(!safeParse.success)
-    {
-        const validationErrors = "Validation errors: " + safeParse.error.errors.map(error => error.message).join(", ");
-        toast.error(validationErrors);
-        return;
-    }
-
-    const parsedData = safeParse.data;
-
-    register(parsedData.email, parsedData.username, parsedData.password, parsedData.account_creation_token).then((successfull) => {
-      if(successfull)
-      {
-        toast.success("Registration successful, redirecting to dashboard...");
-        setTimeout(() => {
-          navigate({ to: "/dashboard" });
-        }, 3000);
+  const onSubmit = (data: RegistrationFormValues) => {
+    register(data.email, data.username, data.password, data.account_creation_token).then(
+      (successful) => {
+        if (successful) {
+          toast.success("Rejestracja przebiegła pomyślnie, przekierowanie do strony głównej...");
+          setTimeout(() => {
+            navigate({ to: "/dashboard" });
+          }, 3000);
+        } else {
+          toast.error("Nie udało się zarejestrować, nieznany błąd");
+        }
       }
-      else
-        toast.error("Registration failed, reason unknown");
-    });
+    );
   };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form onSubmit={handleRegister}>
-        <div className="flex flex-col gap-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
             <a
               href="#"
@@ -71,60 +81,111 @@ export function RegisterForm({
               </div>
               <span className="sr-only">Przewodnik Apokalipsy</span>
             </a>
-            <h1 className="text-xl font-bold">Welcome to Apocalypse Guide</h1>
+            <h1 className="text-xl font-bold">Witaj w Przewodniku Apokalipsy</h1>
           </div>
           <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input 
-                id="username" 
-                name="username"
-                type="text" 
-                placeholder="JohnDoe" 
-                required 
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="********"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="account_creation_token">
-                Account Creation Token
-              </Label>
-              <Input
-                id="account_creation_token"
-                name="account_creation_token"
-                type="text"
-                placeholder="1234567890"
-                required
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Adres e-mail</FormLabel>
+                  <FormControl>
+                    <Input placeholder="m@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nazwa użytkownika</FormLabel>
+                  <FormControl>
+                    <Input placeholder="JohnDoe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Hasło</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="********" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="account_creation_token"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Token tworzenia konta</FormLabel>
+                  <FormControl>
+                    <Input placeholder="1234567890" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <Button type="submit" className="w-full">
-              Register
+              Zarejestruj się
             </Button>
           </div>
-        </div>
-      </form>
-      <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary  ">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        </form>
+      </Form>
+      <div className="text-balance text-center text-xs text-muted-foreground">
+        Klikając kontynuuj, zgadzasz się na nasze{" "}
+        <Dialog>
+          <DialogTrigger className="underline underline-offset-4 hover:text-primary">
+            Warunki użytkowania
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Warunki użytkowania</DialogTitle>
+              <DialogDescription className="text-left">
+                <div className="mt-4 space-y-4">
+                  <p>1. Akceptacja Warunków</p>
+                  <p>Korzystając z Przewodnika Apokalipsy, akceptujesz poniższe warunki...</p>
+                  <p>2. Korzystanie z Serwisu</p>
+                  <p>Użytkownik zobowiązuje się do...</p>
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>{" "}
+        i{" "}
+        <Dialog>
+          <DialogTrigger className="underline underline-offset-4 hover:text-primary">
+            Politykę prywatności
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Polityka Prywatności</DialogTitle>
+              <DialogDescription className="text-left">
+                <div className="mt-4 space-y-4">
+                  <p>1. Gromadzenie Danych</p>
+                  <p>Gromadzimy następujące dane osobowe...</p>
+                  <p>2. Wykorzystanie Danych</p>
+                  <p>Twoje dane są wykorzystywane w celu...</p>
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+        .
       </div>
     </div>
   );

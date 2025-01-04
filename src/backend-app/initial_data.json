@@ -19,6 +19,66 @@
             "name": "Anioł",
             "description": "Leżysz w piachu Świata Apokalipsy, z akami na wierzchu. O czyją pomoc się modlisz? Bogów? Dawno odeszli. Twoich przyjaciół? To same dupki, inaczej nie leżałbyś teraz tutaj. A może chcesz do mamusi? Jest kochana, ale nie wpakuje ci flaków z powrotem do brzucha. Modlisz się o kogoś, obojętnie kogo, z igłą, nitką i sześciopakiem morfny. A kiedy wreszcie się zjawi, zdaje się być aniołem.",
             "special_move": "Jeśli ty i inna postać uprawiacie seks, twoja Hx z nią na twojej karcie automatycznie skacze do +3, a jej Hx z tobą na jej karcie automatycznie skacze o +1. Jeśli dzięki temu osiągnie Hx+4, resetuje ją do Hx+1 i jak zawsze zaznacza doświadczenie"
+        },
+        {
+            "id": 2,
+            "name": "Egzekutor",
+            "description": "Egzekutor to twardy wojownik, specjalizujący się w bezpośredniej walce i przemocy.",
+            "special_move": "Kiedy rzucasz na wyróżnioną cechę oraz gdy resetujesz Hx z inną postacią, zawsze zaznacz jedno kółko doświadczenia."
+        },
+        {
+            "id": 3,
+            "name": "Guru",
+            "description": "Guru to charyzmatyczny przywódca duchowy, który prowadzi swoich wyznawców.",
+            "special_move": "Koło fortuny: nadwyżka i potrzeba zależą od twoich wyznawców."
+        },
+        {
+            "id": 4,
+            "name": "Chopper",
+            "description": "Chopper to przywódca gangu motocyklowego, specjalizujący się w dowodzeniu grupą.",
+            "special_move": "Przywódca watahy: gdy chcesz narzucić wolę swojemu gangowi, rzuć+hart."
+        },
+        {
+            "id": 5,
+            "name": "Kierowca",
+            "description": "Kierowca to mistrz prowadzenia pojazdów i przetrwania na drodze.",
+            "special_move": "Mistrz kierownicy: gdy siedzisz za kółkiem, dodajesz moc swojego auta do różnych rzutów."
+        },
+        {
+            "id": 6,
+            "name": "Muza",
+            "description": "Muza to charyzmatyczna artystka i manipulatorka.",
+            "special_move": "Zapierająca dech w piersiach: dostajesz +1urok (urok+3)"
+        },
+        {
+            "id": 7,
+            "name": "Gubernator",
+            "description": "Gubernator to przywódca społeczności, specjalizujący się w zarządzaniu i polityce.",
+            "special_move": "Przywództwo i Bogactwo: specjalne zdolności związane z zarządzaniem posiadłością i dowodzeniem."
+        },
+        {
+            "id": 8,
+            "name": "Tekknik",
+            "description": "Tekknik to specjalista od technologii i napraw w świecie postapokaliptycznym.",
+            "special_move": "Gdy pracujesz nad sprzętem lub technologią, możesz używać specjalnych ruchów technicznych."
+        },
+        {
+            "id": 9,
+            "name": "Operator",
+            "description": "Operator to specjalista od ciężkiego sprzętu i maszyn wojennych.",
+            "special_move": "Gdy obsługujesz ciężki sprzęt, dodajesz jego moc do swoich rzutów."
+        },
+        {
+            "id": 10,
+            "name": "Psychol",
+            "description": "Psychol to niebezpieczny szaleniec, nieprzewidywalny i brutalny.",
+            "special_move": "Gdy wpadasz w szał, otrzymujesz specjalne bonusy do walki."
+        },
+        {
+            "id": 11,
+            "name": "Żyleta",
+            "description": "Żyleta to szybki i zwinny wojownik, specjalizujący się w walce wręcz.",
+            "special_move": "W walce wręcz otrzymujesz dodatkowe bonusy i specjalne ruchy."
         }
     ],
     "dedicated_moves": [
@@ -31,6 +91,206 @@
             "name": "Własna klinika",
             "description": "posiadasz własny szpital, warsztat wyposażony w aparaturę do podtrzymywania życia, laboratorium chemiczne oraz dwuosobowy personel (ekipa) (Shigusa i Mox, pasuje?). W klinice możesz pracować nad pacjentami tak, jak tekknik pracuje nad technologią (por.).",
             "base_character_class_id": 1
+        },
+        {
+            "name": "Zawodowe współczucie",
+            "description": "gdy pomagasz komuś, kto wykonuje rzut, możesz rzucić+spryt zamiast rzucać+Hx.",
+            "base_character_class_id": 1
+        },
+        {
+            "name": "Anioł bitwy",
+            "description": "kiedy opiekujesz się ludźmi i nie walczysz, dostajesz +1pancerza.",
+            "base_character_class_id": 1
+        },
+        {
+            "name": "Uzdrawiający dotyk",
+            "description": "gdy nakładasz ręce na ciało rannej osoby i otwierasz na nią swój mózg, rzuć+dziw. Na 10+ leczysz 1 segment. Na 7–9 również leczysz 1 segment, ale działasz pod presją ze strony mózgu swojego pacjenta.",
+            "base_character_class_id": 1
+        },
+        {
+            "name": "Naznaczony przez śmierć",
+            "description": "jeśli pacjent będący pod twoją opieką umrze, dostajesz +1dziw (max. +3).",
+            "base_character_class_id": 1
+        },
+        {
+            "name": "Zahartowany w boju",
+            "description": "gdy działasz pod presją, rzuć+hart zamiast rzucać+spokój",
+            "base_character_class_id": 2
+        },
+        {
+            "name": "Jebać to",
+            "description": "ustal swoją drogę ucieczki i rzuć+hart. Na 10+ spieprzasz aż się kurzy. Na 7–9 możesz uciec lub zostać, ale ucieczka będzie cię kosztować.",
+            "base_character_class_id": 2
+        },
+        {
+            "name": "Bitewny instynkt",
+            "description": "gdy otwierasz swój mózg na działanie psychicznego wiru, rzuć+hart zamiast rzucać+dziw, ale wyłącznie podczas walki.",
+            "base_character_class_id": 2
+        },
+        {
+            "name": "Totalny świr",
+            "description": "dostajesz +1hart (hart+3).",
+            "base_character_class_id": 2
+        },
+        {
+            "name": "Przygotowany na wszystko",
+            "description": "posiadasz dobrze zaopatrzoną, wysokiej klasy apteczkę. Liczy się jak apteczka anioła o pojemności 2-zasoby",
+            "base_character_class_id": 2
+        },
+        {
+            "name": "Żądza krwi",
+            "description": "za każdym razem, gdy zadajesz obrażenia, zadajesz dodatkową +1ranę",
+            "base_character_class_id": 2
+        },
+        {
+            "name": "NIE ZADZIERAJ Z SUKINKOTEM",
+            "description": "podczas bitwy liczysz się jako gang (3-rany, gang, mały), z pancerzem zależnym od okoliczności.",
+            "base_character_class_id": 2
+        },
+        {
+            "name": "Szał",
+            "description": "gdy przekazujesz prawdę tłumowi, rzuć+dziw. Na 10+ zatrzymaj 3. Na 7–9 zatrzymaj 1.",
+            "base_character_class_id": 3
+        },
+        {
+            "name": "Charyzmatyczny mówca",
+            "description": "gdy manipulujesz kimś, rzuć+dziw zamiast rzucać+urok.",
+            "base_character_class_id": 3
+        },
+        {
+            "name": "Nawiedzony pojeb",
+            "description": "dostajesz +1dziw (dziw+3).",
+            "base_character_class_id": 3
+        },
+        {
+            "name": "Spojrzenie w głąb duszy",
+            "description": "gdy pomagasz lub przeszkadzasz komuś, rzuć+dziw zamiast rzucać+Hx.",
+            "base_character_class_id": 3
+        },
+        {
+            "name": "Boska protekcja",
+            "description": "twoi bogowie chronią cię, dając ci 1-pancerza.",
+            "base_character_class_id": 3
+        },
+        {
+            "name": "Cholerni złodzieje",
+            "description": "gdy nakazujesz członkom swojego gangu przetrząsnąć kieszenie i sakwy w poszukiwaniu czegoś, rzuć+hart.",
+            "base_character_class_id": 4
+        },
+        {
+            "name": "Świetny w zwarciu",
+            "description": "gdy robisz coś pod presją, rzuć+spryt zamiast rzucać+spokój.",
+            "base_character_class_id": 5
+        },
+        {
+            "name": "Wrodzona intuicja",
+            "description": "gdy otwierasz swój mózg na psychiczny wir, rzuć+spryt zamiast rzucać+dziw.",
+            "base_character_class_id": 5
+        },
+        {
+            "name": "Szalony sukinkot",
+            "description": "kiedy dużo ryzykujesz i stawiasz wszystko na jedną kartę, dostajesz +1pancerza.",
+            "base_character_class_id": 5
+        },
+        {
+            "name": "Kolekcjoner",
+            "description": "dostajesz 2 dodatkowe auta.",
+            "base_character_class_id": 5
+        },
+        {
+            "name": "Mam w garażu czołg",
+            "description": "dostajesz dodatkowe auto z uzbrojeniem.",
+            "base_character_class_id": 5
+        },
+        {
+            "name": "Zapierająca dech w piersiach",
+            "description": "dostajesz +1urok (urok+3)",
+            "base_character_class_id": 6
+        },
+        {
+            "name": "Zagubieni",
+            "description": "kiedy szepczesz czyjeś imię w głąb psychicznego wiru, rzuć+dziw.",
+            "base_character_class_id": 6
+        },
+        {
+            "name": "Boski artysta",
+            "description": "gdy uprawiasz wybraną przez siebie sztukę albo gdy prezentujesz swoje dzieło przed publicznością, rzuć+urok.",
+            "base_character_class_id": 6
+        },
+        {
+            "name": "Zniewalający urok",
+            "description": "gdy zdejmujesz z siebie lub z kogoś innego dowolną część ubrania, wszyscy, którzy cię widzą, nie są w stanie oderwać od ciebie wzroku.",
+            "base_character_class_id": 6
+        },
+        {
+            "name": "Hipnotyzujące spojrzenie",
+            "description": "gdy masz czas i jesteś z kimś na osobności, ta osoba dostaje obsesji na twoim punkcie.",
+            "base_character_class_id": 6
+        },
+        {
+            "name": "Przywództwo",
+            "description": "gdy twój gang walczy dla ciebie, rzuć+hart.",
+            "base_character_class_id": 7
+        },
+        {
+            "name": "Bogactwo",
+            "description": "jeśli twoja posiadłość jest bezpieczna, a rządy nie są zagrożone, na początku sesji rzuć+hart.",
+            "base_character_class_id": 7
+        },
+        {
+            "name": "Władza absolutna",
+            "description": "gdy wydajesz rozkazy swoim podwładnym, rzuć+hart. Na 10+ wykonują je bez pytania. Na 7-9 wykonają je, ale możesz spodziewać się komplikacji.",
+            "base_character_class_id": 7
+        },
+        {
+            "name": "Żelazna ręka",
+            "description": "gdy używasz siły lub groźby przeciwko mieszkańcom swojej posiadłości, rzuć+hart zamiast rzucać+urok.",
+            "base_character_class_id": 7
+        },
+        {
+            "name": "Majstersztyk",
+            "description": "gdy pracujesz nad sprzętem, rzuć+spryt. Na 10+ naprawiasz go lub ulepszasz. Na 7-9 udaje ci się, ale zużywasz więcej zasobów niż planowałeś.",
+            "base_character_class_id": 8
+        },
+        {
+            "name": "Złota rączka",
+            "description": "dostajesz +1spryt (spryt+3).",
+            "base_character_class_id": 8
+        },
+        {
+            "name": "Improwizacja",
+            "description": "możesz użyć dostępnych materiałów do stworzenia prowizorycznych narzędzi i sprzętu.",
+            "base_character_class_id": 8
+        },
+        {
+            "name": "Pancerna bestia",
+            "description": "gdy kierujesz ciężkim sprzętem w walce, dostajesz +1pancerza.",
+            "base_character_class_id": 9
+        },
+        {
+            "name": "Jedność z maszyną",
+            "description": "gdy używasz swojego głównego sprzętu, rzuć+spryt zamiast standardowej cechy.",
+            "base_character_class_id": 9
+        },
+        {
+            "name": "Szaleńczy atak",
+            "description": "gdy rzucasz się do walki z kompletnym lekceważeniem własnego bezpieczeństwa, rzuć+dziw zamiast rzucać+hart.",
+            "base_character_class_id": 10
+        },
+        {
+            "name": "Nieprzewidywalny",
+            "description": "gdy działasz w sposób kompletnie irracjonalny, dostajesz +1 do następnego rzutu.",
+            "base_character_class_id": 10
+        },
+        {
+            "name": "Błyskawiczny refleks",
+            "description": "gdy unikasz niebezpieczeństwa, rzuć+spryt zamiast rzucać+spokój.",
+            "base_character_class_id": 11
+        },
+        {
+            "name": "Taniec ostrzy",
+            "description": "w walce wręcz zadajesz +1ranę i otrzymujesz +1pancerza.",
+            "base_character_class_id": 11
         }
     ]
 }

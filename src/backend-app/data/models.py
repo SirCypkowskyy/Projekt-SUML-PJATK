@@ -49,6 +49,8 @@ class Character(SQLModel, table=True):
     """Model postaci"""
     id: int = Field(default=None, primary_key=True)
     """ID postaci"""
+    user_id: int = Field(default=None, foreign_key="user.id")
+    """ID użytkownika, do którego należy postać"""
     name: Optional[str] = Field(default=None)
     """Nazwa postaci"""
     description: Optional[str] = Field(default=None)
