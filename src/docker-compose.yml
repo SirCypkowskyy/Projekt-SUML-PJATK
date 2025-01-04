@@ -1,6 +1,8 @@
 services:
   backend-app:
     container_name: backend-app-suml
+    env_file:
+      - "./.env.prod"
     build:
       context: ./backend-app
       dockerfile: Dockerfile
@@ -16,7 +18,9 @@ services:
     networks:
       - suml-app-network
   vite-client-suml:
-    container_name: test-vite-client-suml
+    container_name: vite-client-suml
+    env_file:
+      - "./.env.prod"
     build:
       context: ./vite-client-suml
       dockerfile: ./Dockerfile

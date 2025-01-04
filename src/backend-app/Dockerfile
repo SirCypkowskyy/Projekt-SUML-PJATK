@@ -5,15 +5,14 @@ WORKDIR /code
 COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY ./initial_data.json ./initial_data.json
+COPY ./api ./api
+COPY ./core ./core
 COPY ./data ./data
 COPY ./helpers ./helpers
-COPY ./core ./core
-COPY ./api ./api
+COPY ./middleware ./middleware
 COPY ./schemas ./schemas
 COPY ./deps.py ./deps.py
-
-
+COPY ./initial_data.json ./initial_data.json
 COPY ./main.py /code/
 
 
