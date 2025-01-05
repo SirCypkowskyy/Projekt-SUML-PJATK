@@ -1,0 +1,19 @@
+[project]
+name = "projekt-suml-pjatk"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12.5"
+dependencies = [
+    "chromadb>=0.6.1",
+    "langchain>=0.3.14",
+    "langchain-core>=0.3.29",
+    "langchain-openai>=0.2.14",
+    "langchain-text-splitters>=0.3.4",
+    "langgraph>=0.2.60",
+    "langsmith>=0.2.10",
+    "markdown>=3.7",
+    "nltk>=3.9.1",
+    "python-dotenv>=1.0.1",
+    "unstructured[md]>=0.16.11",
+]
