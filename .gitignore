@@ -205,3 +205,4 @@ src/.env.prod
 src/backend-app/database.db
 
 .gitconfig
+/llm/db/
