@@ -4,8 +4,6 @@ Aby stworzyć swoją muzę, wybierz imię, wygląd, cechy, ruchy oraz sprzęt.
 
 ## IMIĘ
 
-Możliwe imiona:
-
 - Październik
 - Wenus
 - Merkury
@@ -54,17 +52,17 @@ Wybierz jeden zestaw cech:
 Dostajesz wszystkie podstawowe ruchy.
 Wybierz 2 ruchy muzy
 
-## RUCHY MUZY
+### RUCHY MUZY
 
-### Zapierająca dech w piersiach
+#### Zapierająca dech w piersiach
 
 dostajesz +1urok (urok+3)
 
-### Zagubieni
+#### Zagubieni
 
 Kiedy szepczesz czyjeś imię w głąb psychicznego wiru, rzuć+dziw. W przypadku sukcesu ta osoba przybędzie do ciebie (nie trzeba wyjaśniać, jak to dokładnie się stało). Na 10+ dostajesz +1 do następnego rzutu przeciw tej osobie. W przypadku porażki MC zada ci 3 pytania. Odpowiedz na nie zgodnie z prawdą.
 
-### Boski artysta
+#### Boski artysta
 
 Gdy uprawiasz wybraną przez siebie sztukę – dowolny akt ekspresji lub kultury – albo gdy prezentujesz swoje dzieło przed publicznością, rzuć+urok. Na 10+ zatrzymaj 3. Na 7–9 zatrzymaj 1. Wydaj 1, by wskazać postać niezależną spośród swojej publiczność i wybrać 1:
 
@@ -76,11 +74,11 @@ Gdy uprawiasz wybraną przez siebie sztukę – dowolny akt ekspresji lub kultur
 
 W przypadku porażki nie otrzymujesz żadnych korzyści, ale nie cierpisz z powodu ran czy straconej okazji. Po prostu wypadasz bardzo dobrze, to wszystko.
 
-### Zniewalający urok
+#### Zniewalający urok
 
 Gdy zdejmujesz z siebie lub z kogoś innego dowolną część ubrania, wszyscy, którzy cię widzą, nie są w stanie oderwać od ciebie wzroku – i nie są w stanie robić nic więcej. Skupiasz na sobie absolutnie całą ich uwagę. Jeśli chcesz, możesz uwolnić wybrane osoby spod działania swojego wpływu.
 
-### Hipnotyzujące spojrzenie
+#### Hipnotyzujące spojrzenie
 
 Gdy masz czas i jesteś z kimś na osobności, ta osoba dostaje obsesji na twoim punkcie. Rzuć+urok. Na 10+ zatrzymaj 3. Na 7–9 zatrzymaj 1. Ta osoba może wydać twoje zatrzymania 1 za 1, jeśli:
 

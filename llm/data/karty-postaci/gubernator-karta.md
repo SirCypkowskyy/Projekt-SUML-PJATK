@@ -4,8 +4,6 @@ Aby stworzyć swojego gubernatora, wybierz imię, wygląd, cechy, ruchy, sprzęt
 
 ## IMIĘ
 
-Możliwe imiona:
-
 - Nbeke
 - Allison
 - Kobe
@@ -48,9 +46,9 @@ Wybierz jeden zestaw cech:
 Dostajesz wszystkie podstawowe ruchy.
 Dostajesz oba ruchy gubernatora
 
-## RUCHY GUBERNATORA
+### RUCHY GUBERNATORA
 
-### Przywództwo
+#### Przywództwo
 
 gdy twój gang walczy dla ciebie, rzuć+hart. Na 10+ zatrzymaj 3.
 Na 7–9 zatrzymaj 1. Podczas walki możesz wydać 1 za 1, żeby twój gang:
@@ -63,7 +61,7 @@ Na 7–9 zatrzymaj 1. Podczas walki możesz wydać 1 za 1, żeby twój gang:
 W przypadku porażki twój gang odwraca się od ciebie lub stara się wydać cię
 wrogowi.
 
-### Bogactwo
+#### Bogactwo
 
 jeśli twoja posiadłość jest bezpieczna, a rządy nie są zagrożone,
 na początku sesji rzuć+hart. Na 10+ uzyskujesz nadwyżkę, dostępną od ręki, na
@@ -71,21 +69,6 @@ czas tej sesji. Na 7–9 uzyskujesz nadwyżkę, ale wybierz 1 potrzebę. W przyp
 porażki lub jeśli twoja posiadłość jest w niebezpieczeństwie albo twoje rządy są
 zagrożone, posiadłość jest w potrzebie. Dokładne wartości nadwyżki i potrzeb
 zależą od twojej posiadłości. Szczegóły poniżej.
-
-## BARTER
-
-Twoja posiadłość zaspokaja wszystkie twoje codzienne potrzeby. Póki jesteś
-u władzy, nie musisz się niczym przejmować.
-Gdy ofiarowujesz podarunki, oto co może liczyć się jako podarunek warty
-1-barter: miesięczna gościna, w tym miejsce do spania i wspólne posiłki z innymi
-członkami społeczności; jedna noc w luksusie i miłym towarzystwie; dowolna broń,
-sprzęt lub odzież, za wyjątkiem rzeczy wartościowych i hi-tech; naprawa jednego
-przedmiotu hi-tech przez twojego najlepszego technika; tygodniowa ochrona przez
-jedną z twoich żylet lub egzekutorów; miesięczne utrzymanie i naprawy ostro eksploatowanego pojazdu; pół godziny prywatnej audiencji; lub, oczywiście, różności warte
-1-barter.
-W czasach dostatku nadwyżkę swojej posiadłości możesz wydawać według
-własnego uznania. (Można przyjąć, że twoi obywatele również żyją w dobrobycie). Powyżej jest lista rzeczy wartych 1-barter. Jeśli idzie o lepszy sprzęt, spodziewaj się konieczności dokonania indywidualnych ustaleń, prawdopodobnie
-negocjacji z innym gubernatorem.
 
 ## SPRZĘT
 

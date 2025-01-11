@@ -94,6 +94,5 @@ Dostajesz:
 - 1 zajebiście wielką broń
 - 2 sztuki poważnej broni
 - 1 zapasową broń
-- pancerz warty 2-pancerza
-(ty ustalasz szczegóły)
+- pancerz warty 2-pancerza (ty ustalasz szczegóły)
 - różności warte 1-barter

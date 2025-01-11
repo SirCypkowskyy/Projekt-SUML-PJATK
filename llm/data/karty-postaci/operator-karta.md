@@ -5,8 +5,6 @@ kontakty, sprzę
 
 ## IMIĘ
 
-Możliwe imiona:
-
 - Berg
 - Waters
 - Laerty
@@ -42,7 +40,7 @@ Możliwe imiona:
 
 ## CECHY
 
-### Wybierz jeden zestaw cech
+Wybierz jeden zestaw cech:
 
 - Spokój+2 Hart=0 Urok−1 Spryt+2 Dziw−1
 - Spokój+2 Hart+1 Urok+1 Spryt=0 Dziw−1
@@ -52,8 +50,7 @@ Możliwe imiona:
 ## RUCHY
 
 Dostajesz wszystkie podstawowe ruchy.
-Dostajesz brudną robotę, następnie wybierz
-jeszcze jeden ruch operatora.
+Dostajesz brudną robotę, następnie wybierz jeszcze jeden ruch operatora.
 
 ### RUCHY OPERATORA
 
@@ -103,14 +100,15 @@ ta osoba słyszała coś o tobie, ale to MC określa co.
 Dostajesz:
 
 - strzykawka z implantem (dotyk, hi-tech)
-Gdy użyjesz na kimś strzykawki, to każdy ruch psychola, który pozwala ci zadać
-obrażenia, zada dodatkowo +1ranę.
+Gdy użyjesz na kimś strzykawki, to każdy ruch psychola, który pozwala ci zadać obrażenia, zada dodatkowo +1ranę.
 -transmiter fal mózgowych (obszarowy, bliski, hi-tech)
-Na potrzeby ruchów psychola: jeśli ktoś jest w stanie dostrzec twój transmiter fal
-mózgowych, będzie też w stanie dostrzec ciebie.
+
+Na potrzeby ruchów psychola: jeśli ktoś jest w stanie dostrzec twój transmiter fal mózgowych, będzie też w stanie dostrzec ciebie.
+
 - meta-narkotyki (dotyk, hi-tech)
-Dotknięcie kogoś daje ci dodatkowe +1zatrzymanie, jeśli następnie użyjesz na tej osobie
-jednego z ruchów psychola.
+
+Dotknięcie kogoś daje ci dodatkowe +1zatrzymanie, jeśli następnie użyjesz na tej osobie jednego z ruchów psychola.
+
 - jednego z ruchów psychola.
 rękawica psychogwałtu (ramię, hi-tech)
 Na potrzeby ruchów psychola: zwykły dotyk liczy się jako czas i zyczna bliskość
