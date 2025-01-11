@@ -4,8 +4,6 @@ Aby stworzyć swojego kierowcę, wybierz imię, wygląd, cechy, ruchy, sprzęt, 
 
 ## IMIĘ
 
-Możliwe imiona:
-
 - Lauren
 - Audrey
 - Farley
@@ -57,9 +55,9 @@ Dostajesz wszystkie podstawowe ruchy.
 
 Dostajesz Mistrza kierownicy, następnie wybierz jeszcze jeden ruch kierowcy.
 
-## RUCHY KIEROWCY
+### RUCHY KIEROWCY
 
-### Mistrz kierownicy
+#### Mistrz kierownicy
 
 gdy siedzisz za kółkiem i...
 ... robisz coś pod presją, dodaj moc twojego auta do swojego rzutu.
@@ -70,23 +68,23 @@ rzutu.
 ... komuś pomagasz lub przeszkadzasz, dodaj moc twojego auta do swojego rzutu.
 ... ktoś ci przeszkadza, dodaj słabość twojego auta do jego rzutu.
 
-### Świetny w zwarciu
+#### Świetny w zwarciu
 
 gdy robisz coś pod presją, rzuć+spryt zamiast rzucać+spokój.
 
-### Wrodzona intuicja
+#### Wrodzona intuicja
 
 gdy otwierasz swój mózg na psychiczny wir, rzuć+spryt zamiast rzucać+dziw.
 
-### Szalony sukinkot
+#### Szalony sukinkot
 
 kiedy dużo ryzykujesz i stawiasz wszystko na jedną kartę, dostajesz +1pancerza. Jeśli przy okazji dowodzisz gangiem lub konwojem, oni również dostają +1pancerza.
 
-### Kolekcjoner
+#### Kolekcjoner
 
 dostajesz 2 dodatkowe auta.
 
-### Mam w garażu czołg
+#### Mam w garażu czołg
 
 dostajesz dodatkowe auto. Dodaj mu stacjonarny karabin maszynowy (3-rany, bliski/daleki, obszarowy, jatka) lub automatyczny granatnik (4-rany, bliski, obszarowy, jatka). Dopisz mu również +1pancerza.
 
