@@ -16,10 +16,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { CharacterClass } from '../types';
 import { getAvailableWeapons } from '../api';
 import { Equipment } from '../types';
 import { EquipmentOption } from '../types';
+import { CharacterClass } from '../constants/character';
 
 interface WeaponDialogProps {
     isOpen: boolean;

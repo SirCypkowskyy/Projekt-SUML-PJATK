@@ -2,9 +2,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { InitialInfo } from '../types';
-import { useQuery } from '@tanstack/react-query';
-import { getCreationQuestions } from '../api';
+import { FetchedQuestions, InitialInfo } from '../types';
 
 /**
  * Propsy dla SummaryView
@@ -26,6 +24,10 @@ type SummaryViewProps = {
      * Funkcja do generowania postaci
      */
     onGenerateCharacter: () => void;
+    /**
+     * Pytania pobrane z API
+     */
+    questions: FetchedQuestions | null;
 }
 
 export const SummaryView: React.FC<SummaryViewProps> = ({
@@ -33,20 +35,18 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
     answers,
     onBackToQuestions,
     onGenerateCharacter,
+    questions,
 }) => {
-    /**
-     * Pobieranie pytania do tworzenia postaci
-     */
-    const { data: questions, isLoading } = useQuery({
-        queryKey: ['creationQuestions'],
-        queryFn: () => getCreationQuestions(),
-    });
-
-    if (isLoading) {
+   
+    if (questions === null || questions.questionsLoading) {
         return <div>Ładowanie pytań...</div>;
     }
 
-    if (!questions) {
+    if (answers === null) {
+        return <div>Ładowanie odpowiedzi...</div>;
+    }
+
+    if (questions.questions === null) {
         return <div>Brak pytań</div>;
     }
 
@@ -99,7 +99,7 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
 
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Odpowiedzi na pytania:</h3>
-                        {questions?.map((question) => (
+                        {questions?.questions?.map((question) => (
                             <div key={question.id} className="space-y-2">
                                 <p className="font-medium">{question.question}</p>
                                 <p className="text-muted-foreground">

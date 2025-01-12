@@ -97,6 +97,7 @@ function CharacterCreator() {
           <SummaryView
             initialInfo={initialInfo}
             answers={answers}
+            questions={fetchedQuestionsObject}
             onBackToQuestions={handleBackToQuestions}
             onGenerateCharacter={handleGenerateCharacter}
           />

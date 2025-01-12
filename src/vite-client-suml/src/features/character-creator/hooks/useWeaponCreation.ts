@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { CharacterClass } from '../types';
 import { Equipment, EquipmentOption } from '../types';
 import { getAvailableWeapons } from '../api';
+import { CharacterClass } from '../constants/character';
 
 interface WeaponCreationState {
     isWeaponDialogOpen: boolean;
