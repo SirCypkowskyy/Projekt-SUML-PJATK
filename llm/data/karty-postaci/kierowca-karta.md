@@ -2,6 +2,13 @@
 
 Aby stworzyć swojego kierowcę, wybierz imię, wygląd, cechy, ruchy, sprzęt, auto
 
+## OPIS POSTACI
+
+Wraz z nadejściem apokalipsy nastąpił rozpad infrastruktury złotej ery.
+Drogi wybrzuszyły się i popękały. Potrzaskane autostrady przestały łączyć ze sobą miasta, które po odcięciu życiodajnej pępowiny wrzały niczym zmiażdżone mrowiska. Potem płonęły. A w końcu upadły.
+Nieliczni nadal pamiętają tamte dni: horyzont czerwony od ognia płonącej cywilizacji, blask zagłady, który przyćmił księżyc i gwiazdy, oraz dym zakrywający słońce.
+W Świecie Apokalipsy horyzont jest czarny. I nie prowadzi do niego żadna z dróg.
+
 ## IMIĘ
 
 - Lauren
