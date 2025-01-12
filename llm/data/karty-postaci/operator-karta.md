@@ -3,6 +3,14 @@
 Aby stworzyć swojego operatora, wybierz imię, wygląd, cechy, ruchy, fuchy, ekipę/
 kontakty, sprzę
 
+## OPIS POSTACI
+
+W Świecie Apokalipsy musisz pracować z tym, co masz pod ręką, prawda?
+Z jednej strony masz Dremmera i Wora, łowcę niewolników i jego cholerną prawą rękę, którzy prowadzą najazdy ze swojej twierdzy z betonu i stali.
+Kilka mil dalej zżerani przez choroby rzeczni ludzie płyną na swych barkach w dół i w górę trującej rzeki.
+Trochę dalej natrasz na Latarnię: grupę mężczyzn i kobiet ze zdziwaczałego kultu głodu, którzy zabarykadowali się niedaleko spalonych ruin.
+A ty chcesz żyć po swojemu i mieć trochę wolności – musisz jednak pracować z tym, co masz. I, cholera, nie wygląda to różowo.
+
 ## IMIĘ
 
 - Berg
