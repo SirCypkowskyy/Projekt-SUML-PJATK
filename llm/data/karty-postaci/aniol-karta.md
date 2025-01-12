@@ -2,6 +2,13 @@
 
 Aby stworzyć swojego anioła, wybierz imię, wygląd, cechy, ruchy oraz sprzęt.
 
+## OPIS POSTACI
+
+Leżysz w piachu Świata Apokalipsy, z akami na wierzchu. O czyją pomoc się modlisz? Bogów? Dawno odeszli.
+Twoich przyjaciół? To same dupki, inaczej nie leżałbyś teraz tutaj.
+A może chcesz do mamusi? Jest kochana, ale nie wpakuje ci aków z powrotem do brzucha. Modlisz się o kogoś, obojętnie kogo, z igłą, nitką
+i sześciopakiem morfiny. A kiedy wreszcie się zjawi, zdaje się być aniołem.
+
 ## IMIĘ
 
 Możliwe imiona:
