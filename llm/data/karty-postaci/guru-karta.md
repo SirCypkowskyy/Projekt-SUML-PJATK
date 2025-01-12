@@ -2,6 +2,13 @@
 
 Aby stworzyć swojego guru, wybierz imię, wygląd, cechy, ruchy oraz wyznawców.
 
+## OPIS POSTACI
+
+Teraz powinno być już jasne jak słońce, że bogowie opuścili Świat Apokalipsy.
+Może w złotej erze, z tym ich jednym narodem i bogiem nad nim, w którym pokładali nadzieję, może wtedy bogowie istnieli. Nie mam cholernego pojęcia.
+Wiem tyle, że co było, nie wróci. Myślę sobie, że kiedy ci wszyscy pojebani guru mówią o „bogach”, mają na myśli
+mentalny wyziew, pozostałość po eksplozji psychicznej nienawiści i desperacji, z którego narodził się Świat Apokalipsy. To właśnie prawdziwy bóg naszych czasów, przyjaciele.
+
 ## IMIĘ
 
 - Wizja
