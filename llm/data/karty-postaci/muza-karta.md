@@ -2,6 +2,12 @@
 
 Aby stworzyć swoją muzę, wybierz imię, wygląd, cechy, ruchy oraz sprzęt.
 
+## OPIS POSTACI
+
+Nawet w plugawym Świecie Apokalipsy istnieje jedzenie, które nie wyśle cię na tamten świat, muzyka, która nie jest śmiechem hien, myśli pozbawione lęku, ciała, które nie są mięsem, seks inny niż parzenie się w rui, taniec, który jest prawdziwy.
+Jest coś jeszcze prócz smrodu, dymu, wściekłości i krwi.
+Piękno w tym szkaradnym świecie jest domeną muz. Zechcą się z tobą podzielić? Co im zaoferujesz?
+
 ## IMIĘ
 
 - Październik
