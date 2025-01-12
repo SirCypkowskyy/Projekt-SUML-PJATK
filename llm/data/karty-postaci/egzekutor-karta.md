@@ -2,6 +2,13 @@
 
 Aby stworzyć swojego egzekutora, wybierz imię, wygląd, cechy, ruchy oraz sprzęt.
 
+## OPIS POSTACI
+
+Świat Apokalipsy jest podły, ohydny i pełen przemocy.
+Prawo i społeczeństwo upadły. Twoje jest tylko to, co jesteś w stanie utrzymać. Nie ma spokoju.
+Nic nie jest trwałe. Pewne jest tylko to, że tego, co zdołasz cal po calu wyrwać z betonu i brudu, musisz potem bronić mordem i krwią.
+Czasami oczywisty ruch jest tym właściwym.
+
 ## IMIĘ
 
 - Vonk Rzeźbiarz
