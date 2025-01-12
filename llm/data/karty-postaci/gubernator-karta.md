@@ -2,6 +2,14 @@
 
 Aby stworzyć swojego gubernatora, wybierz imię, wygląd, cechy, ruchy, sprzęt oraz posiadłość.
 
+## OPIS POSTACI
+
+W Świecie Apokalipsy nie istnieje rząd ani zorganizowane społeczeństwo.
+W złotej erze legend prawdziwi gubernatorzy władali całymi kontynentami, a ich wojny, zamiast po drugiej stronie spalonych ziem, toczone były na drugim końcu
+świata, kiedyś ich armie liczyły setki tysięcy, ba! – mieli nawet pierdolone okręty,
+którymi wozili swoje pierdolone samoloty! A dziś byle kto z bandą egzekutorów
+i betonowym schronem może nazywać siebie gubernatorem. Pewnie coś o tym wiesz.
+
 ## IMIĘ
 
 - Nbeke
