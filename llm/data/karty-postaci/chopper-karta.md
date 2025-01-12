@@ -2,6 +2,13 @@
 
 Aby stworzyć swojego choppera, wybierz imię, wygląd, cechy, ruchy, motocykl oraz sprzęt.
 
+## OPIS POSTACI
+Świat Apokalipsy to niedobór wszystkiego, wiesz jak jest.
+Za mało zdrowej żywności, za mało czystej wody, za mało bezpieczeństwa, za mało światła, za mało elektryczności, za mało dzieci, za mało nadziei.
+Na szczęście po złotej erze zostały nam dwie rzeczy: mnóstwo benzyny, mnóstwo amunicji.
+Wygląda na to, że pierdolone gnoje nie potrzebowali ich tak bardzo, jak zakładali.
+Więc, chopper, zapraszam. Wystarczy dla ciebie
+
 ## IMIĘ
 
 - Pies,
