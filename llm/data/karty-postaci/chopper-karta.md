@@ -62,10 +62,9 @@ Wybierz jeden zestaw cech:
 ## RUCHY
 
 Dostajesz wszystkie podstawowe ruchy.
+Dostajesz oba ruchy choppera.
 
 ### RUCHY CHOPPERA
-
-Dostajesz oba ruchy choppera.
 
 #### Przywódca watahy
 
