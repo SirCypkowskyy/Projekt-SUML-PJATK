@@ -65,10 +65,9 @@ Wybierz jeden zestaw cech:
 ## RUCHY
 
 Dostajesz wszystkie podstawowe ruchy.
+Wybierz dwa ruchy anioła:
 
 ### RUCHY ANIOŁA
-
-Wybierz dwa ruchy anioła:
 
 #### Szósty zmysł
 
