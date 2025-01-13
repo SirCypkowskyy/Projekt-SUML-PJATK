@@ -34,6 +34,8 @@ i betonowym schronem może nazywać siebie gubernatorem. Pewnie coś o tym wiesz
 
 ## WYGLĄD
 
+Wybierz jedną opcję z każdej kategorii:
+
 - Płeć: Mężczyzna, kobieta, dwuznaczny, transgresywny lub niejawny.
 - Ubiór: luksusowy, wyzywający, fetyszystyczny, codzienny, wojskowy, mundur.
 - Twarz:  kwadratowa, poważna, okrutna, delikatna, arystokratyczna, cudowna.

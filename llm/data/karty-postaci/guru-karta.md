@@ -40,6 +40,8 @@ Wybierz jedno z poniższych imion:
 
 ## WYGLĄD
 
+Wybierz jedną opcję z każdej kategorii:
+
 - Płeć: Mężczyzna, kobieta, dwuznaczny, transgresywny lub niejawny
 - Ubiór: podarte szaty, formalne szaty, ubogie szaty, fetyszystyczne szaty, futurystyczne szaty.
 - Twarz: niewinna, brudna, zdeterminowana, szczera, sroga, ascetyczna.
