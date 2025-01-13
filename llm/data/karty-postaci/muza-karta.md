@@ -6,9 +6,12 @@ Aby stworzyć swoją muzę, wybierz imię, wygląd, cechy, ruchy oraz sprzęt.
 
 Nawet w plugawym Świecie Apokalipsy istnieje jedzenie, które nie wyśle cię na tamten świat, muzyka, która nie jest śmiechem hien, myśli pozbawione lęku, ciała, które nie są mięsem, seks inny niż parzenie się w rui, taniec, który jest prawdziwy.
 Jest coś jeszcze prócz smrodu, dymu, wściekłości i krwi.
+
 Piękno w tym szkaradnym świecie jest domeną muz. Zechcą się z tobą podzielić? Co im zaoferujesz?
 
 ## IMIĘ
+
+Wybież jedno z poniższych imion:
 
 - Październik
 - Wenus
@@ -108,3 +111,22 @@ Dostajesz:
 - 2 sztuki luksusowego sprzętu
 - różności warte 1-barter
 - ubranie odpowiadające twojemu wyglądowi (ty ustalasz szczegóły)
+
+Elegancka broń (wybierz 1):
+
+- miniaturowy pistolet (2-rany, bliski, przeładowanie, głośny)
+- zdobiony sztylet (2-rany, ramię, wartościowy)
+- ukryte ostrza (2-rany, ramię, nieskończone)
+- zdobiony miecz (3-rany, ramię, wartościowy)
+- zabytkowy rewolwer (2-rany, bliski, przeładowanie, głośny, wartościowy)
+
+Luksusowy sprzęt (wybierz 2):
+
+- zabytkowe monety (zakładane, wartościowe) Dzięki wywierconym otworom mogą być używane jako biżuteria.
+- okulary (zakładane, wartościowe) Możesz ich użyć, żeby dostać +1spryt, kiedy twój wzrok ma znaczenie, ale jeśli się na to zdecydujesz, bez nich dostaniesz −1spryt, kiedy twój wzrok ma znaczenie.
+- długi piękny płaszcz (zakładany, wartościowy)
+- niesamowite tatuaże (implant)
+- kosmetyki do włosów i skóry (nakładane, wartościowe) Mydełka, pudry i cienie, farby do włosów, kremy, odżywki do skóry i włosów. Po użyciu dostajesz +1 do następnego rzutu na urok.
+- zwierzę (wartościowe, żywe)
+
+Ty wybierasz i opisujesz.
