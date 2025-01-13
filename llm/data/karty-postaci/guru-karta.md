@@ -6,10 +6,14 @@ Aby stworzyć swojego guru, wybierz imię, wygląd, cechy, ruchy oraz wyznawców
 
 Teraz powinno być już jasne jak słońce, że bogowie opuścili Świat Apokalipsy.
 Może w złotej erze, z tym ich jednym narodem i bogiem nad nim, w którym pokładali nadzieję, może wtedy bogowie istnieli. Nie mam cholernego pojęcia.
-Wiem tyle, że co było, nie wróci. Myślę sobie, że kiedy ci wszyscy pojebani guru mówią o „bogach”, mają na myśli
+Wiem tyle, że co było, nie wróci.
+
+Myślę sobie, że kiedy ci wszyscy pojebani guru mówią o „bogach”, mają na myśli
 mentalny wyziew, pozostałość po eksplozji psychicznej nienawiści i desperacji, z którego narodził się Świat Apokalipsy. To właśnie prawdziwy bóg naszych czasów, przyjaciele.
 
 ## IMIĘ
+
+Wybierz jedno z poniższych imion:
 
 - Wizja
 - Nadzieja
@@ -99,3 +103,38 @@ Dostajesz:
 Oprócz swoich wyznawców opisz swój ubiór.
 
 Dostajesz również różności warte 2-barter. Zapomnij jednak o jakimkolwiek sprzęcie.
+
+### WYZNAWCY
+
+Domyślnie masz około 20 wyznawców, lojalnych, ale nie fanatycznych. Mają oni swoje własne życie i swoje własne problemy, są też ściśle powiązani z lokalną społecznością (fortuna+1, nadwyżka: 1-barter, potrzeba: dezercja).
+
+Ustal, kim są:
+
+- twój kult
+- twoja rodzina
+- twoi uczniowie
+- twój krąg
+- twój personel
+- twoja świta
+
+Jeśli podróżujesz, zdecyduj, czy wyznawcy podążają za tobą, czy jednak zostają w społeczności, z której się wywodzą.
+
+Wybierz 2:
+
+- Twoi wyznawcy są ci bardzo oddani. Nadwyżka: +1barter, potrzeba: głód zamiast potrzeby: dezercja.
+- Twoi wyznawcy prowadzą lukratywne interesy. +1fortuna.
+- Zgromadzenie twoich wyznawców stanowi niezwykle silną psychiczną antenę. Nadwyżka: +przepowiednia.
+- Twoi wyznawcy często świętują. Nadwyżka: +impreza.
+- Twoi wyznawcy są wnikliwi i lubią dyskutować. Nadwyżka: +doradztwo.
+- Twoi wyznawcy są sumienni i pracowici. Nadwyżka: +1barter.
+- Twoi wyznawcy chętnie i entuzjastycznie rekrutują nowych członków. Nadwyżka: +wzrost.
+
+Wybierz 2:
+
+- Posiadasz niewielu wyznawców, 10 lub mniej. Nadwyżka: −1 barter.
+- Twoi wyznawcy nie należą do ciebie, raczej ty należysz do nich. Potrzeba: osąd zamiast potrzeby: dezercja.
+- Twoi wyznawcy całkowicie na tobie polegają. Potrzeba: +desperacja.
+- Twoi wyznawcy są uzależnieni od narkotyków. Nadwyżka: +otępienie.
+- Twoi wyznawcy pogardzają modą, luksusem i normami społecznymi. Potrzeba: +choroby.
+- Twoi wyznawcy pogardzają prawem, pokojem, zdrowym rozsądkiem i całym społeczeństwem. Nadwyżka: +przemoc.
+- Twoi wyznawcy są zdeprawowani i zepsuci. Potrzeba: +bestialstwo.
