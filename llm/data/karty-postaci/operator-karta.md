@@ -1,7 +1,6 @@
 # TWORZENIE Operatora
 
-Aby stworzyć swojego operatora, wybierz imię, wygląd, cechy, ruchy, fuchy, ekipę/
-kontakty, sprzę
+Aby stworzyć swojego operatora, wybierz imię, wygląd, cechy, ruchy, fuchy, ekipę, kontakty, sprzęt
 
 ## OPIS POSTACI
 
@@ -9,13 +8,16 @@ W Świecie Apokalipsy musisz pracować z tym, co masz pod ręką, prawda?
 Z jednej strony masz Dremmera i Wora, łowcę niewolników i jego cholerną prawą rękę, którzy prowadzą najazdy ze swojej twierdzy z betonu i stali.
 Kilka mil dalej zżerani przez choroby rzeczni ludzie płyną na swych barkach w dół i w górę trującej rzeki.
 Trochę dalej natrasz na Latarnię: grupę mężczyzn i kobiet ze zdziwaczałego kultu głodu, którzy zabarykadowali się niedaleko spalonych ruin.
+
 A ty chcesz żyć po swojemu i mieć trochę wolności – musisz jednak pracować z tym, co masz. I, cholera, nie wygląda to różowo.
 
 ## IMIĘ
 
+Wybierz jedno z poniższych imion:
+
 - Berg
 - Waters
-- Laerty
+- Lafferty
 - Ebbs
 - Wilson
 - Marshall
@@ -58,7 +60,7 @@ Wybierz jeden zestaw cech:
 ## RUCHY
 
 Dostajesz wszystkie podstawowe ruchy.
-Dostajesz brudną robotę, następnie wybierz jeszcze jeden ruch operatora.
+Dostajesz **brudną robotę**, następnie wybierz jeszcze jeden ruch operatora.
 
 ### RUCHY OPERATORA
 
@@ -107,20 +109,35 @@ ta osoba słyszała coś o tobie, ale to MC określa co.
 
 Dostajesz:
 
-- strzykawka z implantem (dotyk, hi-tech)
-Gdy użyjesz na kimś strzykawki, to każdy ruch psychola, który pozwala ci zadać obrażenia, zada dodatkowo +1ranę.
--transmiter fal mózgowych (obszarowy, bliski, hi-tech)
+- 9mm (2-rany, bliski, głośny) lub broń-wizytówkę (ustal to z MC)
+- różności warte 1-barter
+- ubranie odpowiadające twojemu wyglądowi; możesz zdecydować, czy w jego skład wchodzi również odzież o wartości 1-pancerza (ty ustalasz szczegóły)
 
-Na potrzeby ruchów psychola: jeśli ktoś jest w stanie dostrzec twój transmiter fal mózgowych, będzie też w stanie dostrzec ciebie.
+## FUCHY
 
-- meta-narkotyki (dotyk, hi-tech)
+Wybierz 3 płatne fuchy:
 
-Dotknięcie kogoś daje ci dodatkowe +1zatrzymanie, jeśli następnie użyjesz na tej osobie jednego z ruchów psychola.
+- dostawy (1-barter/napadnięci)
+- dotrzymywanie towarzystwa (1-barter/uwikłani)
+- infiltracja (1-barter/przyłapani)
+- nadzór (1-barter/przechytrzeni)
+- najazd (1-barter/osaczeni)
+- ochrona osobista (1-barter/osaczeni)
+- ochrona terenu (2-barter/inltracja)
+- pieprzenie (2-barter/uwikłani)
+- pośrednictwo (1-barter/wystawieni)
+- prace techniczne (2-barter/wystawieni)
+- uczciwa praca (1-barter/zubożali)
+- wymuszenie (1-barter/obaleni)
+- zabójstwo na zlecenie (3-barter/osaczeni)
+- zbieractwo (1-barter/zubożali)
 
-- jednego z ruchów psychola.
-rękawica psychogwałtu (ramię, hi-tech)
-Na potrzeby ruchów psychola: zwykły dotyk liczy się jako czas i zyczna bliskość
-- projektor fal bólu (1-rana, ppanc, obszarowy, głośny, przeładowanie, hi-tech)
-Działa jak granat wielokrotnego użytku. Fala uderza we wszystkich oprócz ciebie.
--psychiczne stopery (zakładane, hi-tech)
-Chronią noszącego je przed działaniem ruchów i sprzętu psychola.
+Wybierz 1 zobowiązanie:
+
+- unikanie kogoś (radzisz sobie wyjątkowo dobrze / dopada cię, gdy właśnie jesteś w kłopotach)
+- spłata długów (nadążasz z opłatami / zalegasz z opłatami)
+- zemsta (dokopujesz komuś / zostajesz upokorzony)
+- ochranianie kogoś (nic im się nie stało / zniknęli)
+- w pogoni za luksusem (otacza cię piękno / wpadasz w kłopoty)
+- zachowanie twarz (dotrzymujesz słowa i zachowujesz twarz / łamiesz zasady)
+- poszukiwanie odpowiedzi (masz nowe informacje / trafiasz za fałszywy trop)
