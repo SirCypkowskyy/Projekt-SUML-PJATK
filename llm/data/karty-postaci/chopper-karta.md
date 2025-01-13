@@ -1,16 +1,20 @@
 # TWORZENIE CHOPPERA
 
-Aby stworzyć swojego choppera, wybierz imię, wygląd, cechy, ruchy, motocykl oraz sprzęt.
+Aby stworzyć swojego choppera, wybierz imię, wygląd, cechy, ruchy, motocykl, sprzęt oraz cechy gangu.
 
 ## OPIS POSTACI
 
 Świat Apokalipsy to niedobór wszystkiego, wiesz jak jest.
 Za mało zdrowej żywności, za mało czystej wody, za mało bezpieczeństwa, za mało światła, za mało elektryczności, za mało dzieci, za mało nadziei.
+
 Na szczęście po złotej erze zostały nam dwie rzeczy: mnóstwo benzyny, mnóstwo amunicji.
 Wygląda na to, że pierdolone gnoje nie potrzebowali ich tak bardzo, jak zakładali.
-Więc, chopper, zapraszam. Wystarczy dla ciebie
+
+Więc, chopper, zapraszam. Wystarczy dla ciebie.
 
 ## IMIĘ
+
+Wybierz jedno z poniższych imion:
 
 - Pies,
 - Domino
@@ -97,3 +101,24 @@ Wybierz też 2 sztuki konkretnej broni:
 2. Wygląd (wybierz 1 lub 2): opływowy kształt, vintage, mocno odchudzony, rycząca bestia, masywny, muskularny, szpanerski, luksusowy.
 3. Słabości (wybierz 1): wolny, zaniedbany, cholernie dużo pali, drobny, niestabilny, kapryśny, zawodny.
 4. Jeśli z jakiegoś powodu potrzebujesz parametrów swojego motocyklu (domyślnie nie potrzebujesz ich), prezentują się one następująco: moc+1, wygląd+1, 1-pancerza, słabość+1.
+
+## GANG
+
+Domyślnie twój gang składa się z około 15 agresywnych sukinsynów wyposażonych w prowizoryczne pancerze, byle jaką broń i całkowicie pozbawionych dyscypliny (2-rany, gang, mały, bestialski, 1-pancerza).
+
+Wybierz 2:
+
+- Twój gang składa się z około 30 agresywnych sukinsynów. Zmień mały na średni.
+- Twój gang jest dobrze uzbrojony. +1rana.
+- Twój gang jest dobrze opancerzony. +1pancerza.
+- Twój gang jest bardzo zdyscyplinowany. Usuń bestialski.
+- Twój gang jest koczowniczy: nie potrzebuje stałej bazy, by naprawiać i utrzymywać swoje motocykle w dobrym stanie. Dostaje +mobilny.
+- Twój gang jest samowystarczalny, potrafi utrzymać się z najazdów i zbieractwa. Dostaje +bogaty.
+
+Następnie wybierz 1:
+
+- Motocykle twojego gangu są w złym stanie, trzeba o nie ciągle dbać. Słaby punkt: awarie.
+- Motocykle twojego gangu są kapryśne i trudne w utrzymaniu. Słaby punkt: uziemienie.
+- Twój gang ma luźną strukturę, ludzie przychodzą i odchodzą, kiedy chcą. Słaby punkt: dezercja.
+- Twój gang ma poważny dług u kogoś potężnego. Słaby punkt: zobowiązanie.
+- Twój gang jest brudny i chorowity. Słaby punkt: choroby.
