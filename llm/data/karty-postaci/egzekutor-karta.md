@@ -1,15 +1,18 @@
 # TWORZENIE EGZEKUTORA
 
-Aby stworzyć swojego egzekutora, wybierz imię, wygląd, cechy, ruchy oraz sprzęt.
+Aby stworzyć swojego egzekutora, wybierz imię, wygląd, cechy, ruchy, sprzęt oraz broń.
 
 ## OPIS POSTACI
 
 Świat Apokalipsy jest podły, ohydny i pełen przemocy.
 Prawo i społeczeństwo upadły. Twoje jest tylko to, co jesteś w stanie utrzymać. Nie ma spokoju.
 Nic nie jest trwałe. Pewne jest tylko to, że tego, co zdołasz cal po calu wyrwać z betonu i brudu, musisz potem bronić mordem i krwią.
+
 Czasami oczywisty ruch jest tym właściwym.
 
 ## IMIĘ
+
+Wybierz jedno z poniższych imion:
 
 - Vonk Rzeźbiarz
 - Batty
@@ -43,6 +46,8 @@ Czasami oczywisty ruch jest tym właściwym.
 - Kumpel.
 
 ## WYGLĄD
+
+Wybierz jedną opcję z każdej kategorii:
 
 - Płeć: Mężczyzna, kobieta, dwuznaczny, transgresywny lub niejawny
 - Ubiór: niedopasowany pancerz, stary wysłużony pancerz, własnoręcznie wykonany pancerz.
@@ -103,3 +108,36 @@ Dostajesz:
 - 1 zapasową broń
 - pancerz warty 2-pancerza (ty ustalasz szczegóły)
 - różności warte 1-barter
+
+### BROŃ
+
+#### Zajebiście wielka broń
+
+Wybierz 1 z poniższych:
+
+- karabin snajperski (3-rany, daleki, hi-tech)
+- karabin maszynowy (3-rany, bliski/daleki, automatyczny, jatka)
+- karabin szturmowy (3-rany, bliski, głośny, automatyczny)
+- automatyczny granatnik (4-rany, bliski, obszarowy, jatka)
+
+#### Poważna broń
+
+Wybierz 2 z poniższych:
+
+- karabin myśliwski (2-rany, daleki, głośny)
+- strzelba (3-rany, bliski, przeładowanie, jatka)
+- pistolet maszynowy (2-rany, bliski, automatyczny, głośny)
+- magnum (3-rany, bliski, przeładowanie, głośny)
+- granatnik (4-rany, bliski, przeładowanie, jatka)
+- amunicja przeciwpancerna (ppanc), dodaj etykietę "ppanc" do wszystkich spluw
+- tłumik (hi-tech), usuń etykietę "głośny" z dowolnej broni
+
+#### Broń zapasowa
+
+Wybierz 1 z poniższych:
+
+- 9mm (2-rany, bliski, głośny)
+- zajebiście wielki nóż (2-rany, ramię)
+- maczeta (3-rany, ramię, jatka)
+- mnóstwo noży (2-rany, ramię, nieskończony)
+- granaty (4-rany, obszarowy, przeładowanie, jatka)
