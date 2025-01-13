@@ -6,10 +6,14 @@ Aby stworzyć swojego kierowcę, wybierz imię, wygląd, cechy, ruchy, sprzęt, 
 
 Wraz z nadejściem apokalipsy nastąpił rozpad infrastruktury złotej ery.
 Drogi wybrzuszyły się i popękały. Potrzaskane autostrady przestały łączyć ze sobą miasta, które po odcięciu życiodajnej pępowiny wrzały niczym zmiażdżone mrowiska. Potem płonęły. A w końcu upadły.
+
 Nieliczni nadal pamiętają tamte dni: horyzont czerwony od ognia płonącej cywilizacji, blask zagłady, który przyćmił księżyc i gwiazdy, oraz dym zakrywający słońce.
+
 W Świecie Apokalipsy horyzont jest czarny. I nie prowadzi do niego żadna z dróg.
 
 ## IMIĘ
+
+Wybierz jedno z poniższych imion:
 
 - Lauren
 - Audrey
@@ -41,6 +45,8 @@ W Świecie Apokalipsy horyzont jest czarny. I nie prowadzi do niego żadna z dr�
 
 ## WYGLĄD
 
+Wybierz jedną opcję z każdej kategorii:
+
 - Płeć: Mężczyzna, kobieta, dwuznaczny lub transgresywny.
 - Ubiór: vintage, codzienny, roboczy, skórzany, szpanerski i zniszczony.
 - Twarz: przystojna, cudowna, poważna, delikatna, zmęczona, krzywa.
@@ -60,20 +66,20 @@ Wybierz jeden zestaw cech:
 
 Dostajesz wszystkie podstawowe ruchy.
 
-Dostajesz Mistrza kierownicy, następnie wybierz jeszcze jeden ruch kierowcy.
+Dostajesz **Mistrza kierownicy**, następnie wybierz jeszcze jeden ruch kierowcy.
 
 ### RUCHY KIEROWCY
 
 #### Mistrz kierownicy
 
-gdy siedzisz za kółkiem i...
-... robisz coś pod presją, dodaj moc twojego auta do swojego rzutu.
-... chcesz przejąć coś siłą, dodaj moc twojego auta do swojego rzutu.
-... grozisz komuś przemocą, dodaj moc twojego auta do swojego rzutu.
-... chcesz kogoś uwieść lub zmanipulować, dodaj wygląd twojego auta do swojego
-rzutu.
-... komuś pomagasz lub przeszkadzasz, dodaj moc twojego auta do swojego rzutu.
-... ktoś ci przeszkadza, dodaj słabość twojego auta do jego rzutu.
+gdy siedzisz za kółkiem i:
+
+- robisz coś pod presją, dodaj moc twojego auta do swojego rzutu.
+- chcesz przejąć coś siłą, dodaj moc twojego auta do swojego rzutu.
+- grozisz komuś przemocą, dodaj moc twojego auta do swojego rzutu.
+- chcesz kogoś uwieść lub zmanipulować, dodaj wygląd twojego auta do swojego rzutu.
+- komuś pomagasz lub przeszkadzasz, dodaj moc twojego auta do swojego rzutu.
+- ktoś ci przeszkadza, dodaj słabość twojego auta do jego rzutu.
 
 #### Świetny w zwarciu
 
@@ -110,4 +116,43 @@ Poręczna broń (wybierz 1):
 - duży nóż (2-rany, ramię)
 - obrzyn (3-rany, bliski, przeładowanie, jatka)
 - maczeta (3-rany, ramię, jatka)
-- magnum (3-rany, bliski, przeładowanie, głośny
+- magnum (3-rany, bliski, przeładowanie, głośny)
+
+### AUTO
+
+Wybierz jeden z czterech profili:
+
+- Moc+2 Wygląd+1 1-Pancerza Słabość+1
+- Moc+2 Wygląd+2 0-Pancerza Słabość+1
+- Moc+1 Wygląd+2 1-Pancerza Słabość+1
+- Moc+2 Wygląd+1 2-Pancerza Słabość+2
+
+#### Typ
+
+Wybierz jeden typ auta:
+
+Coupe, kompakt, sedan, jeep, pickup, van, ciężarówka, bus, limuzyna, ambulans, auto z napędem na cztery koła, ciągnik, maszyna budowlana / samochód budowlany.
+
+#### Zalety
+
+Wybierz tyle opcji, ile wynosi moc twojego auta.
+
+Wybierz jego zaletę lub zalety:
+
+Szybki, wytrzymały, agresywny, podkręcony, wielki, terenowy, zwrotny, kompatybilny, pojemny, niezawodny, łatwy w naprawie.
+
+#### Wygląd
+
+Wybierz tyle opcji, ile wynosi wygląd twojego
+
+Ustal jego wygląd:
+
+Opływowy kształt, vintage, w idealnym stanie, potężny, luksusowy, szpanerski, muskularny, dziwaczny, ładny, ręczne wykończenie, kolce i ochronne płyty, jaskrawy.
+
+#### Słabości
+
+Wybierz tyle opcji, ile słabości posiada twoje auto.
+
+Wybierz jego słabość lub słabości:
+
+Wolny, delikatna budowa, zaniedbany, kapryśny, ciasny, dużo pali, zawodny, głośny, skoki prędkości.
