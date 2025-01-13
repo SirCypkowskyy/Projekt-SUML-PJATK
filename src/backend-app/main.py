@@ -56,6 +56,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Dodajemy routery do aplikacji
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
@@ -66,8 +67,3 @@ def read_root():
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
-
-
-@app.get("/api/data")
-def get_data():
-    return {"data": "Hello World"}
