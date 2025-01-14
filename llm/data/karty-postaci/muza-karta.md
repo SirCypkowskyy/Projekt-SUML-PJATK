@@ -1,4 +1,4 @@
-# TWORZENIE EGZEKUTORA
+# TWORZENIE MUZY
 
 Aby stworzyć swoją muzę, wybierz imię, wygląd, cechy, ruchy oraz sprzęt.
 
