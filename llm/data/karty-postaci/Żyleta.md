@@ -10,7 +10,7 @@ Niebezpieczne.
 
 ## IMIĘ
 
-Wybież jedno z poniższych imion:
+Wybierz jedno z poniższych imion:
 
 - Śnieg
 - Karmazyn

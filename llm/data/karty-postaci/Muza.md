@@ -11,7 +11,7 @@ Piękno w tym szkaradnym świecie jest domeną muz. Zechcą się z tobą podziel
 
 ## IMIĘ
 
-Wybież jedno z poniższych imion:
+Wybierz jedno z poniższych imion:
 
 - Październik
 - Wenus
