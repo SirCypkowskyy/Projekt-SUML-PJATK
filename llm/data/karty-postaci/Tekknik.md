@@ -8,6 +8,8 @@ Jest jedna rzecz, na którą zawsze można liczyć w Świecie Apokalipsy: wszyst
 
 ## IMIĘ
 
+Wybierz jedno z poniższych imion:
+
 - Leah
 - Joshua
 - Tai

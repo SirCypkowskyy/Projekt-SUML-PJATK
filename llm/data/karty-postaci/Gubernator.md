@@ -12,6 +12,8 @@ i betonowym schronem może nazywać siebie gubernatorem. Pewnie coś o tym wiesz
 
 ## IMIĘ
 
+Wybierz jedno z poniższych imion:
+
 - Nbeke
 - Allison
 - Kobe
