@@ -1,4 +1,4 @@
-# TWORZENIE Operatora
+# TWORZENIE OPERATORA
 
 Aby stworzyć swojego operatora, wybierz imię, wygląd, cechy, ruchy, fuchy, ekipę, kontakty, sprzęt
 

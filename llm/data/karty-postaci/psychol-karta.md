@@ -1,6 +1,6 @@
-# TWORZENIE EGZEKUTORA
+# TWORZENIE PSYCHOLA
 
-Aby stworzyć swoją muzę, wybierz imię, wygląd, cechy, ruchy oraz sprzęt.
+Aby stworzyć swojego psychola, wybierz imię, wygląd, cechy, ruchy oraz sprzęt.
 
 ## OPIS POSTACI
 

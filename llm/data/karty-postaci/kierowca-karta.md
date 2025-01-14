@@ -1,4 +1,4 @@
-# TWORZENIE GURU
+# TWORZENIE KIEROWCY
 
 Aby stworzyć swojego kierowcę, wybierz imię, wygląd, cechy, ruchy, sprzęt, auto
 
