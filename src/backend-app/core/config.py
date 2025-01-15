@@ -21,7 +21,7 @@ class ModeEnum(str, Enum):
 
 class Settings(BaseSettings):
     """Klasa Settings zawierająca konfigurację aplikacji"""
-    MODE_STR: str = "development"
+    MODE_STR: str
     print(f'Running in {MODE_STR} mode')
     """Tryb działania aplikacji"""
     MODE: ModeEnum = ModeEnum.development if MODE_STR == "development" else ModeEnum.production if MODE_STR == "production" else ModeEnum.testing
