@@ -28,6 +28,8 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+print(f'Running in {settings.MODE_STR} mode')
+
 # Dodanie middleware'a logowania przed innymi middleware'ami
 app.middleware("http")(logging_middleware)
 
