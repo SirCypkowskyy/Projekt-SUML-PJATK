@@ -21,7 +21,7 @@ class ModeEnum(str, Enum):
 
 class Settings(BaseSettings):
     """Klasa Settings zawierająca konfigurację aplikacji"""
-    MODE_STR: str
+    MODE_STR: str = "production"
     """Nazwa trybu działania aplikacji"""
     MODE: ModeEnum = ModeEnum.development if MODE_STR == "development" else ModeEnum.production
     """Tryb działania aplikacji"""
@@ -90,6 +90,7 @@ class Settings(BaseSettings):
         model_config = SettingsConfigDict(
             case_sensitive=True, env_file=os.path.expanduser("~/sumlapp/.env")
         )
+    
 
 
 settings = Settings()
