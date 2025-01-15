@@ -8,6 +8,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - MODE=production
+      - MODE_STR=${MODE_STR}
       - PROJECT_NAME=${PROJECT_NAME}
       - PROJECT_VERSION=${PROJECT_VERSION}
       - PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION}
