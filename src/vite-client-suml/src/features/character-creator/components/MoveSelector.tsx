@@ -1,19 +1,20 @@
+import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, ReactElement } from "react";
-import { Move } from "../types";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { ReactElement, useState } from "react";
 import { getAvailableMoves } from "../api";
 import { CharacterClass } from "../constants/character";
+import { useQuery } from "@tanstack/react-query";
+import { Move } from "../types";
 
 /**
  * Props dla komponentu MoveSelector
  * @interface
  * @property {CharacterClass} characterClass - Klasa postaci
  * @property {Move[]} selectedMoves - Wybrane ruchy
- * @property {(moves: Move[]) => void} onMovesChange - Funkcja zmieniająca wybrane ruchy
+ * @property {(move: Move) => void} onMoveSelect - Funkcja zmieniająca wybrane ruchy
  */
 interface MoveSelectorProps {
     /**
@@ -28,9 +29,9 @@ interface MoveSelectorProps {
     selectedMoves: Move[];
     /**
      * Funkcja zmieniająca wybrane ruchy
-     * @type {(moves: Move[]) => void}
+     * @type {(move: Move) => void}
      */
-    onMovesChange: (moves: Move[]) => void;
+    onMoveSelect: (move: Move) => void;
 }
 
 /**
@@ -41,114 +42,73 @@ interface MoveSelectorProps {
 export function MoveSelector({
     characterClass,
     selectedMoves,
-    onMovesChange,
+    onMoveSelect
 }: MoveSelectorProps): ReactElement {
     const [open, setOpen] = useState(false);
-    const availableMoves = getAvailableMoves(characterClass);
 
-    /**
-     * Funkcja obsługująca wybranie ruchu
-     * @param {Move} move - Ruch do wybrania
-     */
-    const handleMoveSelect = (move: Move) => {
-        if (selectedMoves.length < 2) {
-            onMovesChange([...selectedMoves, move]);
-        }
-    };
+    const { data: availableMoves, isLoading } = useQuery({
+        queryKey: ['availableMoves', characterClass],
+        queryFn: () => getAvailableMoves(characterClass),
+        enabled: open
+    });
 
-    /**
-     * Funkcja obsługująca usuwanie ruchu
-     * @param {Move} moveToRemove - Ruch do usunięcia
-     */
-    const handleMoveRemove = (moveToRemove: Move) => {
-        onMovesChange(selectedMoves.filter((move) => move.name !== moveToRemove.name));
-    };
+    if (isLoading) {
+        return <p>Loading...</p>
+    }
 
     return (
-        <div className="space-y-4">
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={open}
-                        className="w-full justify-between"
-                        disabled={selectedMoves.length >= 2}
-                    >
-                        <span>
-                            {selectedMoves.length === 0
-                                ? "Wybierz ruchy"
-                                : `Wybrano ${selectedMoves.length} ${selectedMoves.length === 1 ? "ruch" : "ruchy"
-                                }`}
-                        </span>
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                    <Command>
-                        <CommandInput placeholder="Szukaj ruchu..." />
-                        <CommandEmpty>Nie znaleziono ruchu.</CommandEmpty>
-                        <CommandGroup>
-                            {availableMoves.map((move) => {
-                                const isSelected = selectedMoves.some(
-                                    (selected) => selected.name === move.name
-                                );
-                                return (
-                                    <CommandItem
-                                        key={move.name}
-                                        onSelect={() => {
-                                            if (isSelected) {
-                                                handleMoveRemove(move);
-                                            } else {
-                                                handleMoveSelect(move);
-                                            }
-                                            setOpen(false);
-                                        }}
-                                    >
-                                        <Check
-                                            className={cn(
-                                                "mr-2 h-4 w-4",
-                                                isSelected ? "opacity-100" : "opacity-0"
-                                            )}
-                                        />
-                                        <div className="flex flex-col">
-                                            <span>{move.name}</span>
-                                            <span className="text-sm text-muted-foreground">
-                                                {move.description}
-                                            </span>
-                                        </div>
-                                    </CommandItem>
-                                );
-                            })}
-                        </CommandGroup>
-                    </Command>
-                </PopoverContent>
-            </Popover>
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between"
+                >
+                    <span>
+                        {selectedMoves.length > 0
+                            ? `Wybrano ${selectedMoves.length} ruchów`
+                            : "Wybierz ruchy"}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+                <Command>
+                    <CommandInput placeholder="Szukaj ruchu..." />
+                    <CommandEmpty>Nie znaleziono ruchu.</CommandEmpty>
+                    <CommandGroup>
+                        {availableMoves?.map((move: Move) => {
+                            const isSelected = selectedMoves.some(
+                                (selected) => selected.name === move.name
+                            );
 
-            {/* Wybrane ruchy */}
-            <div className="space-y-2">
-                {selectedMoves.map((move) => (
-                    <div
-                        key={move.name}
-                        className="flex items-start justify-between p-3 bg-muted rounded-lg"
-                    >
-                        <div className="space-y-1">
-                            <h4 className="font-medium">{move.name}</h4>
-                            <p className="text-sm text-muted-foreground">
-                                {move.description}
-                            </p>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleMoveRemove(move)}
-                            className="ml-2"
-                        >
-                            <X className="h-4 w-4" />
-                        </Button>
-                    </div>
-                ))}
-            </div>
-        </div>
+                            return (
+                                <CommandItem
+                                    key={move.name}
+                                    onSelect={() => {
+                                        onMoveSelect(move);
+                                        setOpen(false);
+                                    }}
+                                >
+                                    <Check
+                                        className={cn(
+                                            "mr-2 h-4 w-4",
+                                            isSelected ? "opacity-100" : "opacity-0"
+                                        )}
+                                    />
+                                    <div className="flex flex-col gap-1">
+                                        <div className="font-medium">{move.name}</div>
+                                        <div className="text-sm text-muted-foreground">
+                                            {move.description}
+                                        </div>
+                                    </div>
+                                </CommandItem>
+                            );
+                        })}
+                    </CommandGroup>
+                </Command>
+            </PopoverContent>
+        </Popover>
     );
 }

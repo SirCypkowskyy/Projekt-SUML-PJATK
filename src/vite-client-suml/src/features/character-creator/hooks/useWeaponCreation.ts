@@ -1,106 +1,57 @@
-import { useState, useCallback } from 'react';
-import { Equipment, EquipmentOption } from '../types';
-import { getAvailableWeapons } from '../api';
-import { CharacterClass } from '../constants/character';
+import { useState } from "react";
+import { getAvailableWeapons } from "../api";
+import { CharacterClass } from "../constants/character";
+import { useQuery } from "@tanstack/react-query";
 
-interface WeaponCreationState {
-    isWeaponDialogOpen: boolean;
-    selectedWeaponBase?: Equipment | undefined;
-    selectedWeaponOptions?: EquipmentOption[] | undefined;
+export interface WeaponData {
+    name: string;
+    description: string;
+    isRemovable: boolean;
+    isWeapon: boolean;
+    options?: Array<{ name: string; effect: string }>;
 }
 
-interface UseWeaponCreationReturn extends WeaponCreationState {
-    openWeaponDialog: () => void;
-    closeWeaponDialog: () => void;
-    selectWeaponBase: (base: Equipment | undefined) => void;
-    addWeaponOption: (option: EquipmentOption) => void;
-    removeWeaponOption: (optionName: string) => void;
-    createWeapon: (equipment: Equipment[], setEquipment: (equipment: Equipment[]) => void) => void;
-    getAvailableOptions: (characterClass: CharacterClass) => EquipmentOption[];
-    resetWeaponCreation: () => void;
-}
+export const useWeaponCreation = () => {
+    const [isWeaponDialogOpen, setIsWeaponDialogOpen] = useState(false);
+    const [selectedWeapon, setSelectedWeapon] = useState<WeaponData | null>(null);
+    const [characterClass, setCharacterClass] = useState<CharacterClass | null>(null);
 
-export const useWeaponCreation = (): UseWeaponCreationReturn => {
-    const [state, setState] = useState<WeaponCreationState>({
-        isWeaponDialogOpen: false,
-        selectedWeaponBase: undefined,
-        selectedWeaponOptions: undefined,
+    const { data: weapons } = useQuery({
+        queryKey: ['weapons', characterClass],
+        queryFn: () => getAvailableWeapons(characterClass!),
+        enabled: !!characterClass && isWeaponDialogOpen
     });
 
-    const openWeaponDialog = useCallback(() => {
-        setState(prev => ({ ...prev, isWeaponDialogOpen: true }));
-    }, []);
+    const openWeaponDialog = (characterClass: CharacterClass) => {
+        setCharacterClass(characterClass);
+        setIsWeaponDialogOpen(true);
+    };
 
-    const closeWeaponDialog = useCallback(() => {
-        setState(prev => ({ ...prev, isWeaponDialogOpen: false }));
-    }, []);
+    const closeWeaponDialog = () => {
+        setIsWeaponDialogOpen(false);
+        setSelectedWeapon(null);
+        setCharacterClass(null);
+    };
 
-    const selectWeaponBase = useCallback((base: Equipment | undefined) => {
-        setState(prev => ({ ...prev, selectedWeaponBase: base }));
-    }, []);
-
-    const addWeaponOption = useCallback((option: EquipmentOption) => {
-        setState(prev => {
-            if ((prev.selectedWeaponOptions ?? []).length >= 2) return prev;
-            return {
-                ...prev,
-                selectedWeaponOptions: [...(prev.selectedWeaponOptions ?? []), option],
-            };
-        });
-    }, []);
-
-    const removeWeaponOption = useCallback((optionName: string) => {
-        setState(prev => ({
-            ...prev,
-            selectedWeaponOptions: (prev.selectedWeaponOptions ?? []).filter(
-                option => option.name !== optionName
-            ),
-        }));
-    }, []);
-
-    const createWeapon = useCallback((
-        equipment: Equipment[],
-        setEquipment: (equipment: Equipment[]) => void
-    ) => {
-        if (state.selectedWeaponBase) {
-            const newWeapon: Equipment = {
-                name: `${state.selectedWeaponBase.name} ${state.selectedWeaponOptions?.map(o => o.name).join(", ")}`.trim(),
-                description: `${state.selectedWeaponBase.description} ${state.selectedWeaponOptions?.map(o => o.effect).join(", ")}`.trim(),
+    const selectWeapon = (weaponName: string) => {
+        const weapon = weapons?.find(weapon => weapon.name === weaponName);
+        if (weapon) {
+            setSelectedWeapon({
+                name: weapon.name,
+                description: weapon.description,
                 isRemovable: true,
-            };
-
-            setEquipment([...equipment, newWeapon]);
-            resetWeaponCreation();
+                isWeapon: true,
+                options: weapon.options
+            });
         }
-    }, [state.selectedWeaponBase, state.selectedWeaponOptions]);
-
-    const getAvailableOptions = useCallback((characterClass: CharacterClass): EquipmentOption[] => {
-        const weapons = getAvailableWeapons(characterClass);
-        const options = weapons.find(weapon => weapon.name === state.selectedWeaponBase?.name)?.options;
-        return options?.filter(
-            option => !state.selectedWeaponOptions?.find(
-                selected => selected.name === option.name
-            )
-        ) ?? [];
-    }, [state.selectedWeaponOptions]);
-
-    const resetWeaponCreation = useCallback(() => {
-        setState({
-            isWeaponDialogOpen: false,
-            selectedWeaponBase: undefined,
-            selectedWeaponOptions: undefined,
-        });
-    }, []);
+    };
 
     return {
-        ...state,
+        isWeaponDialogOpen,
+        selectedWeapon,
         openWeaponDialog,
         closeWeaponDialog,
-        selectWeaponBase,
-        addWeaponOption,
-        removeWeaponOption,
-        createWeapon,
-        getAvailableOptions,
-        resetWeaponCreation,
+        selectWeapon,
+        weapons: weapons || []
     };
 };

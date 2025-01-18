@@ -205,7 +205,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                                 equipment={character.equipment}
                                 isEditing={isEditing}
                                 onEquipmentRemove={handleEquipmentRemove}
-                                onAddWeapon={openWeaponDialog}
+                                onAddWeapon={() => openWeaponDialog(character.characterClass)}
                             />
                         </div>
 
