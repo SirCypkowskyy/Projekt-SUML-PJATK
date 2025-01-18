@@ -490,3 +490,50 @@ async def get_character(
             status_code=500,
             detail=f"Błąd podczas pobierania postaci: {str(e)}"
         )
+
+
+@router.put("/saved-characters/{character_id}", response_model=SavedCharacterResponse)
+async def update_character(
+    character_id: int,
+    character: GeneratedCharacter,
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> SavedCharacterResponse:
+    """
+    Aktualizuje zapisaną postać.
+    """
+    user = auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    
+    # Pobierz postać z bazy danych
+    saved_character = auth.session.query(SavedCharacter).filter(
+        SavedCharacter.id == character_id,
+        SavedCharacter.user_id == user.id
+    ).first()
+    
+    if not saved_character:
+        raise HTTPException(status_code=404, detail="Postać nie znaleziona")
+    
+    # Aktualizuj dane postaci
+    saved_character.name = character.name
+    saved_character.character_class = character.characterClass
+    saved_character.stats = character.stats.dict()
+    saved_character.appearance = character.appearance
+    saved_character.description = character.description
+    saved_character.moves = [move.dict() for move in character.moves]
+    saved_character.equipment = [equipment.dict() for equipment in character.equipment]
+    saved_character.updated_at = datetime.utcnow()
+    
+    auth.session.commit()
+    
+    return SavedCharacterResponse(
+        id=saved_character.id,
+        name=saved_character.name,
+        character_class=saved_character.character_class,
+        stats=saved_character.stats,
+        appearance=saved_character.appearance,
+        description=saved_character.description,
+        moves=saved_character.moves,
+        equipment=saved_character.equipment,
+        created_at=saved_character.created_at,
+        updated_at=saved_character.updated_at
+    )

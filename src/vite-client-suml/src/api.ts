@@ -71,4 +71,28 @@ export async function saveCharacter(character: GeneratedCharacter): Promise<Save
     throw new Error('Failed to save character')
   }
   return response.json()
+}
+
+export const updateCharacter = async (characterId: number, character: GeneratedCharacter): Promise<SavedCharacter> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/character-gen/saved-characters/${characterId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(character),
+    });
+    return response.json();
+  } catch (error) {
+    console.error('Error updating character:', error);
+    throw error;
+  }
+}
+
+export async function getAvailableMoves(characterClass: string): Promise<Array<{ name: string; description: string }>> {
+  const response = await fetch(`${API_BASE_URL}/character-gen/moves/${characterClass}`)
+  if (!response.ok) {
+    throw new Error('Failed to fetch available moves')
+  }
+  return response.json()
 } 

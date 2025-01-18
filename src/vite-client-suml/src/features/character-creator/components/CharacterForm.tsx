@@ -36,7 +36,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
     onEditToggle,
     onShowImage,
     onRestart,
-    onSave,
+    onSave
 }) => {
     const {
         isWeaponDialogOpen,
