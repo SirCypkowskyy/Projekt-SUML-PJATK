@@ -59,14 +59,50 @@ export const QuestionsForm: React.FC<QuestionsFormProps> = ({
     }
 
     if (fetchedQuestionsObject === null || fetchedQuestionsObject?.questionsLoading) {
-        return <div>Ładowanie pytań...</div>;
+        return (
+            <div className="text-center p-4">
+                <p className="text-lg text-muted-foreground">Ładowanie pytań...</p>
+            </div>
+        );
     }
 
-    if (!fetchedQuestionsObject?.questions) {
-        return <div>Brak pytań</div>;
+    if (!fetchedQuestionsObject?.questions || fetchedQuestionsObject.questions.length === 0) {
+        return (
+            <div className="text-center p-4">
+                <p className="text-lg text-muted-foreground">
+                    {fetchedQuestionsObject.questionsError
+                        ? fetchedQuestionsObject.questionsError.message
+                        : "Nie udało się pobrać pytań. Spróbuj ponownie."}
+                </p>
+                <Button
+                    variant="outline"
+                    onClick={() => window.location.reload()}
+                    className="mt-4"
+                >
+                    Spróbuj ponownie
+                </Button>
+            </div>
+        );
     }
 
     const currentQuestion = fetchedQuestionsObject.questions[currentQuestionIndex];
+    if (!currentQuestion) {
+        return (
+            <div className="text-center p-4">
+                <p className="text-lg text-muted-foreground">
+                    Wystąpił błąd podczas ładowania pytania. Spróbuj ponownie.
+                </p>
+                <Button
+                    variant="outline"
+                    onClick={() => window.location.reload()}
+                    className="mt-4"
+                >
+                    Spróbuj ponownie
+                </Button>
+            </div>
+        );
+    }
+
     const isLastQuestion = currentQuestionIndex === fetchedQuestionsObject.questions.length - 1;
 
     return (

@@ -2,10 +2,10 @@ import createFetchClient from "openapi-fetch";
 import createClient from "openapi-react-query";
 import type { paths } from "./v1";
 
-const fetchClient = createFetchClient<paths>({
+const apiClient = createFetchClient<paths>({
     baseUrl: "",
 });
 
-const $api = createClient(fetchClient);
+const $api = createClient(apiClient);
 
-export { $api };
+export { $api, apiClient };

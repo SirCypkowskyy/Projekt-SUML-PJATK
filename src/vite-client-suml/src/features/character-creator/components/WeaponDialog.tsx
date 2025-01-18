@@ -20,6 +20,7 @@ import { getAvailableWeapons } from '../api';
 import { Equipment } from '../types';
 import { EquipmentOption } from '../types';
 import { CharacterClass } from '../constants/character';
+import { useQuery } from '@tanstack/react-query';
 
 interface WeaponDialogProps {
     isOpen: boolean;
@@ -37,7 +38,11 @@ export const WeaponDialog: React.FC<WeaponDialogProps> = ({
     const [selectedBase, setSelectedBase] = React.useState<Equipment | null>(null);
     const [selectedOptions, setSelectedOptions] = React.useState<EquipmentOption[]>([]);
 
-    const weapons = getAvailableWeapons(characterClass);
+    const { data: weapons = [], isLoading } = useQuery({
+        queryKey: ['weapons', characterClass],
+        queryFn: () => getAvailableWeapons(characterClass),
+        enabled: isOpen,
+    });
 
     const handleCreateWeapon = () => {
         if (selectedBase) {
@@ -69,23 +74,29 @@ export const WeaponDialog: React.FC<WeaponDialogProps> = ({
                 <div className="space-y-6">
                     <div className="space-y-2">
                         <h4 className="font-medium">Podstawa broni</h4>
-                        <Select
-                            onValueChange={(value) => {
-                                const weapon = weapons.find(w => w.name === value);
-                                setSelectedBase(weapon ?? null);
-                            }}
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Wybierz podstawę broni" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {weapons.map((weapon) => (
-                                    <SelectItem key={weapon.name} value={weapon.name}>
-                                        {weapon.name} ({weapon.description})
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        {isLoading ? (
+                            <div className="text-center p-4">
+                                <p className="text-sm text-muted-foreground">Ładowanie broni...</p>
+                            </div>
+                        ) : (
+                            <Select
+                                onValueChange={(value) => {
+                                    const weapon = weapons.find(w => w.name === value);
+                                    setSelectedBase(weapon ?? null);
+                                }}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Wybierz podstawę broni" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {weapons.map((weapon) => (
+                                        <SelectItem key={weapon.name} value={weapon.name}>
+                                            {weapon.name} ({weapon.description})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
                     </div>
 
                     <div className="space-y-2">

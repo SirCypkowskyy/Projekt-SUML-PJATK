@@ -21,13 +21,17 @@ class ModeEnum(str, Enum):
 
 class Settings(BaseSettings):
     """Klasa Settings zawierająca konfigurację aplikacji"""
-    MODE_STR: str = os.environ['MODE_STR']
-    if MODE_STR is None:
-        raise ValueError("MODE_STR is not set") 
+    MODE_STR: str = "development"
     """Nazwa trybu działania aplikacji"""
+    try:
+        MODE_STR: str = os.environ['MODE_STR']
+    except KeyError:
+        print("Błąd przy wczytywaniu zmiennych środowiskowych")
+
+    print(f"Ustawiony tryb aplikacji: {MODE_STR}")
     MODE: ModeEnum = ModeEnum.development if MODE_STR == "development" else ModeEnum.production
     """Tryb działania aplikacji"""
-    PROJECT_NAME: str = "Przewodnik Apokalipsy"    
+    PROJECT_NAME: str = "Przewodnik Apokalipsy"
     """Nazwa projektu"""
     PROJECT_VERSION: str = "0.0.1"
     """Wersja projektu"""
@@ -57,6 +61,7 @@ class Settings(BaseSettings):
     """Hasło pierwszego admina"""
 
     BACKEND_CORS_ORIGINS: str
+
     @field_validator("BACKEND_CORS_ORIGINS")
     def assemble_cors_origins(cls, v: ty.Union[str, list[str]]) -> ty.Union[list[str], str]:
         if isinstance(v, str) and not v.startswith("["):
@@ -86,13 +91,14 @@ class Settings(BaseSettings):
                 "character_classes": [],
                 "dedicated_moves": []
             }
-            
+
     # Tylko dev
-    if os.environ.get('MODE_STR', "production") == "development":
+    if MODE_STR == "development":
+        print(
+            "Ponieważ aplikacja jest w trybie development, wczytuję plik .env z ~/sumlapp")
         model_config = SettingsConfigDict(
             case_sensitive=True, env_file=os.path.expanduser("~/sumlapp/.env")
         )
-    
 
 
 settings = Settings()

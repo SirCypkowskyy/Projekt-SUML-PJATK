@@ -1,7 +1,8 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from enum import Enum, IntEnum
+from sqlalchemy import JSON, Column
 
 class UserRoleEnum(IntEnum):
     """Role użytkowników w systemie"""
@@ -24,6 +25,7 @@ class User(SQLModel, table=True):
     """Hasło użytkownika"""
     role_id: Optional[int] = Field(default=None, foreign_key="userrole.id")
     """Rola użytkownika"""
+    characters: List["SavedCharacter"] = Relationship(back_populates="user")
 
 class UserRole(SQLModel, table=True):
     """Model roli użytkownika"""
@@ -170,3 +172,34 @@ class CharacterItemItemAttribute(SQLModel, table=True):
     """ID przedmiotu"""
     item_attribute_id: int = Field(default=None, foreign_key="itemattribute.id")
     """ID atrybutu"""
+
+class SavedCharacter(SQLModel, table=True):
+    """Model zapisanej postaci"""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    """Identyfikator postaci"""
+    user_id: int = Field(foreign_key="user.id")
+    """Identyfikator użytkownika, który stworzył postać"""
+    name: str = Field(index=True)
+    """Nazwa postaci"""
+    character_class: str
+    """Klasa postaci"""
+    stats: dict = Field(sa_column=Column(JSON), default={})
+    """Statystyki postaci"""
+    appearance: str
+    """Wygląd postaci"""
+    description: str
+    """Opis postaci"""
+    moves: List[dict] = Field(sa_column=Column(JSON), default=[])
+    """Lista ruchów postaci"""
+    equipment: List[dict] = Field(sa_column=Column(JSON), default=[])
+    """Lista ekwipunku postaci"""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    """Data utworzenia postaci"""
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    """Data ostatniej aktualizacji postaci"""
+
+    # Relacja z użytkownikiem
+    user: Optional["User"] = Relationship(back_populates="characters")
+
+# Dodaj relację do klasy User
+User.characters = Relationship(back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"})

@@ -8,20 +8,86 @@ import {
 } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Plus } from 'lucide-react'
+import { Plus, ArrowRight } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { Skeleton } from '@/components/ui/skeleton'
+import { getCharactersStats } from '@/api'
+import { getSavedCharacters } from '@/api'
+
+interface SavedCharacter {
+  id: number
+  name: string
+  character_class: string
+  stats: Record<string, number>
+  appearance: string
+  description: string
+  moves: Array<{
+    name: string
+    description: string
+  }>
+  equipment: Array<{
+    name: string
+    description: string
+    isRemovable: boolean
+    isWeapon: boolean
+    options?: Array<{ name: string; effect: string }>
+  }>
+  created_at: string
+  updated_at: string
+}
+
+interface CharactersStats {
+  total: number
+  this_month: number
+}
 
 export const Route = createFileRoute('/__authenticated/dashboard/')({
   component: RouteComponent,
 })
 
+function CharacterCard({ character }: { character: SavedCharacter }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{character.name}</CardTitle>
+        <CardDescription>{character.character_class}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground mb-4">{character.description}</p>
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-muted-foreground">
+            Utworzono: {character.created_at}
+          </div>
+          <Link to={`/character/${character.id}`}>
+            <Button variant="outline" size="sm">
+              Szczegóły
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 function RouteComponent() {
+  const { data: stats, isLoading: isLoadingStats } = useQuery<CharactersStats>({
+    queryKey: ['characters-stats'],
+    queryFn: getCharactersStats,
+  })
+
+  const { data: characters, isLoading: isLoadingCharacters } = useQuery<SavedCharacter[]>({
+    queryKey: ['saved-characters'],
+    queryFn: getSavedCharacters,
+  })
+
   return (
     <>
       <div className="p-8">
         <div className="mb-2 flex items-center justify-between space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">Twoje Postacie</h1>
           <div className="flex items-center space-x-2">
-            <Link to="/character-creator/"> 
+            <Link to="/character-creator/">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Nowa Postać
@@ -60,61 +126,16 @@ function RouteComponent() {
                   </svg>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">12</div>
-                  <p className="text-xs text-muted-foreground">
-                    4 utworzone w tym miesiącu
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Wygenerowane Portrety
-                  </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                    <circle cx="9" cy="9" r="2" />
-                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                  </svg>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">8</div>
-                  <p className="text-xs text-muted-foreground">Przez DALL-E</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Eksporty PDF
-                  </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                    <polyline points="14 2 14 8 20 8" />
-                  </svg>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">15</div>
-                  <p className="text-xs text-muted-foreground">
-                    W tym miesiącu
-                  </p>
+                  {isLoadingStats ? (
+                    <Skeleton className="h-8 w-full" />
+                  ) : (
+                    <>
+                      <div className="text-2xl font-bold">{stats?.total || 0}</div>
+                      <p className="text-xs text-muted-foreground">
+                        {stats?.this_month || 0} utworzone w tym miesiącu
+                      </p>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -124,7 +145,25 @@ function RouteComponent() {
                   <CardTitle>Ostatnio Utworzone Postacie</CardTitle>
                   <CardDescription>Twoje najnowsze kreacje</CardDescription>
                 </CardHeader>
-                <CardContent>{/* Tu będzie lista postaci */}</CardContent>
+                <CardContent>
+                  {isLoadingCharacters ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-20 w-full" />
+                      <Skeleton className="h-20 w-full" />
+                      <Skeleton className="h-20 w-full" />
+                    </div>
+                  ) : characters && characters.length > 0 ? (
+                    <div className="space-y-4">
+                      {characters.slice(0, 5).map((character) => (
+                        <CharacterCard key={character.id} character={character} />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-center text-muted-foreground">
+                      Nie masz jeszcze żadnych postaci
+                    </p>
+                  )}
+                </CardContent>
               </Card>
               <Card className="col-span-1 lg:col-span-3">
                 <CardHeader>

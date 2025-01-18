@@ -8,22 +8,18 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as authenticatedImport } from './routes/__authenticated'
+import { Route as IndexImport } from './routes/index'
 import { Route as RegisterIndexImport } from './routes/register/index'
 import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as AboutIndexImport } from './routes/about/index'
 import { Route as authenticatedProfileIndexImport } from './routes/__authenticated/profile/index'
 import { Route as authenticatedDashboardIndexImport } from './routes/__authenticated/dashboard/index'
 import { Route as authenticatedCharacterCreatorIndexImport } from './routes/__authenticated/character-creator/index'
-
-// Create Virtual Routes
-
-const IndexLazyImport = createFileRoute('/')()
+import { Route as authenticatedCharacterCharacterIdIndexImport } from './routes/__authenticated/character/$characterId/index'
 
 // Create/Update Routes
 
@@ -32,11 +28,11 @@ const authenticatedRoute = authenticatedImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexLazyRoute = IndexLazyImport.update({
+const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+} as any)
 
 const RegisterIndexRoute = RegisterIndexImport.update({
   id: '/register/',
@@ -76,6 +72,13 @@ const authenticatedCharacterCreatorIndexRoute =
     getParentRoute: () => authenticatedRoute,
   } as any)
 
+const authenticatedCharacterCharacterIdIndexRoute =
+  authenticatedCharacterCharacterIdIndexImport.update({
+    id: '/character/$characterId/',
+    path: '/character/$characterId/',
+    getParentRoute: () => authenticatedRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -84,7 +87,7 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
+      preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
     '/__authenticated': {
@@ -136,6 +139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedProfileIndexImport
       parentRoute: typeof authenticatedImport
     }
+    '/__authenticated/character/$characterId/': {
+      id: '/__authenticated/character/$characterId/'
+      path: '/character/$characterId'
+      fullPath: '/character/$characterId'
+      preLoaderRoute: typeof authenticatedCharacterCharacterIdIndexImport
+      parentRoute: typeof authenticatedImport
+    }
   }
 }
 
@@ -145,6 +155,7 @@ interface authenticatedRouteChildren {
   authenticatedCharacterCreatorIndexRoute: typeof authenticatedCharacterCreatorIndexRoute
   authenticatedDashboardIndexRoute: typeof authenticatedDashboardIndexRoute
   authenticatedProfileIndexRoute: typeof authenticatedProfileIndexRoute
+  authenticatedCharacterCharacterIdIndexRoute: typeof authenticatedCharacterCharacterIdIndexRoute
 }
 
 const authenticatedRouteChildren: authenticatedRouteChildren = {
@@ -152,6 +163,8 @@ const authenticatedRouteChildren: authenticatedRouteChildren = {
     authenticatedCharacterCreatorIndexRoute,
   authenticatedDashboardIndexRoute: authenticatedDashboardIndexRoute,
   authenticatedProfileIndexRoute: authenticatedProfileIndexRoute,
+  authenticatedCharacterCharacterIdIndexRoute:
+    authenticatedCharacterCharacterIdIndexRoute,
 }
 
 const authenticatedRouteWithChildren = authenticatedRoute._addFileChildren(
@@ -159,7 +172,7 @@ const authenticatedRouteWithChildren = authenticatedRoute._addFileChildren(
 )
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
+  '/': typeof IndexRoute
   '': typeof authenticatedRouteWithChildren
   '/about': typeof AboutIndexRoute
   '/login': typeof LoginIndexRoute
@@ -167,10 +180,11 @@ export interface FileRoutesByFullPath {
   '/character-creator': typeof authenticatedCharacterCreatorIndexRoute
   '/dashboard': typeof authenticatedDashboardIndexRoute
   '/profile': typeof authenticatedProfileIndexRoute
+  '/character/$characterId': typeof authenticatedCharacterCharacterIdIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
+  '/': typeof IndexRoute
   '': typeof authenticatedRouteWithChildren
   '/about': typeof AboutIndexRoute
   '/login': typeof LoginIndexRoute
@@ -178,11 +192,12 @@ export interface FileRoutesByTo {
   '/character-creator': typeof authenticatedCharacterCreatorIndexRoute
   '/dashboard': typeof authenticatedDashboardIndexRoute
   '/profile': typeof authenticatedProfileIndexRoute
+  '/character/$characterId': typeof authenticatedCharacterCharacterIdIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
+  '/': typeof IndexRoute
   '/__authenticated': typeof authenticatedRouteWithChildren
   '/about/': typeof AboutIndexRoute
   '/login/': typeof LoginIndexRoute
@@ -190,6 +205,7 @@ export interface FileRoutesById {
   '/__authenticated/character-creator/': typeof authenticatedCharacterCreatorIndexRoute
   '/__authenticated/dashboard/': typeof authenticatedDashboardIndexRoute
   '/__authenticated/profile/': typeof authenticatedProfileIndexRoute
+  '/__authenticated/character/$characterId/': typeof authenticatedCharacterCharacterIdIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -203,6 +219,7 @@ export interface FileRouteTypes {
     | '/character-creator'
     | '/dashboard'
     | '/profile'
+    | '/character/$characterId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -213,6 +230,7 @@ export interface FileRouteTypes {
     | '/character-creator'
     | '/dashboard'
     | '/profile'
+    | '/character/$characterId'
   id:
     | '__root__'
     | '/'
@@ -223,11 +241,12 @@ export interface FileRouteTypes {
     | '/__authenticated/character-creator/'
     | '/__authenticated/dashboard/'
     | '/__authenticated/profile/'
+    | '/__authenticated/character/$characterId/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
+  IndexRoute: typeof IndexRoute
   authenticatedRoute: typeof authenticatedRouteWithChildren
   AboutIndexRoute: typeof AboutIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
@@ -235,7 +254,7 @@ export interface RootRouteChildren {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
+  IndexRoute: IndexRoute,
   authenticatedRoute: authenticatedRouteWithChildren,
   AboutIndexRoute: AboutIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
@@ -260,14 +279,15 @@ export const routeTree = rootRoute
       ]
     },
     "/": {
-      "filePath": "index.lazy.tsx"
+      "filePath": "index.tsx"
     },
     "/__authenticated": {
       "filePath": "__authenticated.tsx",
       "children": [
         "/__authenticated/character-creator/",
         "/__authenticated/dashboard/",
-        "/__authenticated/profile/"
+        "/__authenticated/profile/",
+        "/__authenticated/character/$characterId/"
       ]
     },
     "/about/": {
@@ -289,6 +309,10 @@ export const routeTree = rootRoute
     },
     "/__authenticated/profile/": {
       "filePath": "__authenticated/profile/index.tsx",
+      "parent": "/__authenticated"
+    },
+    "/__authenticated/character/$characterId/": {
+      "filePath": "__authenticated/character/$characterId/index.tsx",
       "parent": "/__authenticated"
     }
   }

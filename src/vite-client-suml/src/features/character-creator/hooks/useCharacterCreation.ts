@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Equipment, FetchedQuestions, Move } from "../types";
 import { InitialInfo } from "../types";
 import { GeneratedCharacter } from "../types";
-import { fetchCreationQuestions, generateCharacter, getAvailableMoves } from "../api";
+import { fetchCreationQuestions, generateCharacter, getAvailableMoves, saveCharacter } from "../api";
 import { getBaseEquipment } from "../api";
 import { CharacterClass } from "../constants/character";
 import { toast } from "sonner";
@@ -94,7 +94,7 @@ export interface CharacterCreationActions {
   /**
    * Funkcja wybierająca klasę postaci
    */
-  handleSelectClass: (characterClass: CharacterClass) => void;
+  handleSelectClass: (characterClass: CharacterClass) => Promise<void>;
   /**
    * Funkcja ustawiająca ekwipunek
    */
@@ -114,7 +114,7 @@ export interface CharacterCreationActions {
   /**
    * Funkcja pobierająca dostępne ruchy dla danej klasy postaci
    */
-  handleGetAvailableMoves: (characterClass: CharacterClass) => Move[];
+  handleGetAvailableMoves: (characterClass: CharacterClass) => Promise<Move[]>;
   /**
    * Funkcja ustawiająca informacje o postaci
    */
@@ -183,10 +183,12 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
 
   const navigate = useNavigate();
 
-  const handleSelectClass = (characterClass: CharacterClass) => {
+  const handleSelectClass = async (characterClass: CharacterClass) => {
     setCharacterClass(characterClass);
-    setAvailableMoves(getAvailableMoves(characterClass));
-    setEquipment(getBaseEquipment(characterClass));
+    const moves = await getAvailableMoves(characterClass);
+    setAvailableMoves(moves);
+    const baseEquipment = await getBaseEquipment(characterClass);
+    setEquipment(baseEquipment);
   };
 
   const handleSetEquipment = (equipment: Equipment[]) => {
@@ -235,15 +237,26 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
     });
     try {
       const questions = await fetchCreationQuestions(initialInfo);
-      console.log("Setting fetchedQuestionsObject with questions", questions);
+      console.log("Otrzymane pytania:", questions);
+      
+      if (!questions || questions.length === 0) {
+        setFetchedQuestionsObject({
+          questions: [],
+          questionIndex: 0,
+          questionsLoading: false,
+          questionsError: new Error("Nie udało się pobrać pytań. Spróbuj ponownie."),
+        });
+        return;
+      }
+
       setFetchedQuestionsObject({
         questions: questions,
         questionIndex: 0,
         questionsLoading: false,
         questionsError: null,
       });
-      console.log("Final fetchedQuestionsObject", fetchedQuestionsObject);
     } catch (error) {
+      console.error("Błąd podczas pobierania pytań:", error);
       setFetchedQuestionsObject({
         questions: [],
         questionIndex: 0,
@@ -269,9 +282,20 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
     setCharacterClass(null);
   };
 
-  const handleSaveCharacter = () => {
-    toast.success("Postać została zapisana");
-    navigate({ to: "/dashboard/" });
+  const handleSaveCharacter = async () => {
+    if (!generatedCharacter) {
+        toast.error("Nie można zapisać postaci - brak wygenerowanej postaci");
+        return;
+    }
+
+    try {
+        await saveCharacter(generatedCharacter);
+        toast.success("Postać została zapisana");
+        navigate({ to: "/dashboard/" });
+    } catch (error) {
+        console.error('Błąd podczas zapisywania postaci:', error);
+        toast.error("Nie udało się zapisać postaci");
+    }
   };
 
   const setFetchedQuestionsObjectQuestionIndex = (index: number) => {
@@ -296,8 +320,8 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
     console.log("handleCreateCharacterImage done");
   };
 
-  const handleGetAvailableMoves = (characterClass: CharacterClass) => {
-    return getAvailableMoves(characterClass);
+  const handleGetAvailableMoves = async (characterClass: CharacterClass) => {
+    return await getAvailableMoves(characterClass);
   };
 
   return {

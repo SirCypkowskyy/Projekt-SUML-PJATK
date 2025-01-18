@@ -4,8 +4,9 @@ from pydantic import BaseModel
 from enum import Enum
 from helpers.auth_helper import AuthHelper
 from deps import get_auth_helper
-from data.models import UserRoleEnum
+from data.models import UserRoleEnum, SavedCharacter
 from api.v1.endpoints.auth import ACCESS_TOKEN_COOKIE
+from datetime import datetime
 
 router = APIRouter()
 
@@ -110,19 +111,34 @@ class CharacterClass(str, Enum):
     TEKKNIK = "Tekknik"
     ZYLETA = "Żyleta"
 
+
+class SavedCharacterResponse(BaseModel):
+    """Model odpowiedzi z zapisaną postacią"""
+    id: int
+    name: str
+    character_class: str
+    stats: Dict
+    appearance: str
+    description: str
+    moves: List[Dict]
+    equipment: List[Dict]
+    created_at: datetime
+    updated_at: datetime
+
 # Endpointy
 
 
 @router.get("/moves/{character_class}", response_model=List[Move])
 async def get_available_moves(
-    character_class: CharacterClass, 
-    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
-    auth_helper: AuthHelper = Depends(get_auth_helper)
+    character_class: CharacterClass,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
 ) -> List[Move]:
     """
     Pobiera dostępne ruchy dla danej klasy postaci.
     """
-    auth_helper.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     moves_dict = {
         CharacterClass.MECHANIK: [
             Move(
@@ -141,12 +157,16 @@ async def get_available_moves(
 
 
 @router.get("/equipment/{character_class}", response_model=List[Equipment])
-async def get_base_equipment(character_class: CharacterClass,
-                              access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None, auth_helper: AuthHelper = Depends(get_auth_helper)) -> List[Equipment]:
+async def get_base_equipment(
+    character_class: CharacterClass,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> List[Equipment]:
     """
     Pobiera podstawowy ekwipunek dla danej klasy postaci.
     """
-    auth_helper.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
 
     equipment_dict = {
         CharacterClass.MECHANIK: [
@@ -167,12 +187,16 @@ async def get_base_equipment(character_class: CharacterClass,
 
 
 @router.get("/weapons/{character_class}", response_model=List[Equipment])
-async def get_available_weapons(character_class: CharacterClass,
-                                  access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None, auth_helper: AuthHelper = Depends(get_auth_helper)) -> List[Equipment]:
+async def get_available_weapons(
+    character_class: CharacterClass,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> List[Equipment]:
     """
     Pobiera dostępne bronie dla danej klasy postaci.
     """
-    auth_helper.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
 
     weapons_dict = {
         CharacterClass.MECHANIK: [
@@ -195,12 +219,16 @@ async def get_available_weapons(character_class: CharacterClass,
 
 
 @router.get("/class-description/{character_class}", response_model=Dict[str, str])
-async def get_class_description(character_class: CharacterClass,
-                                access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None, auth_helper: AuthHelper = Depends(get_auth_helper)) -> Dict[str, str]:
+async def get_class_description(
+    character_class: CharacterClass,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> Dict[str, str]:
     """
     Pobiera opis klasy postaci.
     """
-    auth_helper.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     descriptions = {
         CharacterClass.ANIOL: "Leżysz w piachu Świata Apokalipsy, z akami na wierzchu...",
         CharacterClass.CHOPPER: "Świat Apokalipsy to niedobór wszystkiego, wiesz jak jest...",
@@ -229,18 +257,20 @@ async def generate_character(
     character_class: CharacterClass,
     questions: List[Question],
     answers: Dict[str, str],
-    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None, auth_helper: AuthHelper = Depends(get_auth_helper)
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
 ) -> GeneratedCharacter:
     """
     Generuje postać na podstawie podanych informacji.
     """
-    auth_helper.verify_logged_in_user(access_token, UserRoleEnum.USER)
-    user_id = auth_helper.verify_token(access_token, "access")
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    user_id = auth.verify_token(access_token, "access")
     print(f"Generating character with: {initial_info}, {character_class}, {questions}, {answers}")
 
     # Pobierz ruchy i ekwipunek dla danej klasy
-    moves = await get_available_moves(character_class)
-    equipment = await get_base_equipment(character_class)
+    moves = await get_available_moves(character_class, access_token, auth)
+    equipment = await get_base_equipment(character_class, access_token, auth)
 
     return GeneratedCharacter(
         name="John Doe",
@@ -254,21 +284,209 @@ async def generate_character(
 
 
 @router.post("/questions", response_model=List[Question])
-async def fetch_creation_questions(initial_info: InitialInfo,
-                                   access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None, auth_helper: AuthHelper = Depends(get_auth_helper)) -> List[Question]:
+async def fetch_creation_questions(
+    initial_info: InitialInfo,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> List[Question]:
     """
     Pobiera pytania do tworzenia postaci na podstawie informacji początkowych.
     :param initial_info: Informacje początkowe o postaci przy jej generowaniu
     :return: Lista pytań
     """
-    auth_helper.verify_logged_in_user(access_token, UserRoleEnum.USER)
-    user_id = auth_helper.verify_token(access_token, "access")
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    user_id = auth.verify_token(access_token, "access")
     print(f"fetching questions with initialInfo: {initial_info}")
     try:
         # questions = await get_creation_questions()
-        questions = []
+        questions = [
+            Question(text="Jakie jest twoje imię?", type="text"),
+            Question(text="Jakie dane ma twój bohater?", type="text")
+        ]
         print(f"questions fetched: {questions}")
         return questions
     except Exception as e:
         print(f"Failed to fetch creation questions: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/save", response_model=GeneratedCharacter)
+async def save_character(
+    character: GeneratedCharacter,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> GeneratedCharacter:
+    """
+    Zapisuje wygenerowaną postać.
+    """
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    user_id = auth.verify_token(access_token, "access")
+    print(f"Saving character for user {user_id}: {character}")
+
+    try:
+        # Konwertuj postać na model bazy danych
+        saved_character = SavedCharacter(
+            user_id=user_id,
+            name=character.name,
+            character_class=character.characterClass,
+            stats=character.stats.model_dump(),
+            appearance=character.appearance,
+            description=character.description,
+            moves=[move.model_dump() for move in character.moves],
+            equipment=[item.model_dump() for item in character.equipment],
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+
+        # Zapisz postać w bazie danych
+        auth.session.add(saved_character)
+        auth.session.commit()
+        auth.session.refresh(saved_character)
+
+        print(f"Character saved successfully with ID: {saved_character.id}")
+        return character
+
+    except Exception as e:
+        auth.session.rollback()
+        print(f"Error saving character: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Błąd podczas zapisywania postaci: {str(e)}"
+        )
+
+
+@router.get("/saved-characters", response_model=List[SavedCharacterResponse])
+async def get_saved_characters(
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> List[SavedCharacterResponse]:
+    """
+    Pobiera wszystkie zapisane postacie użytkownika.
+    """
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    user_id = auth.verify_token(access_token, "access")
+
+    try:
+        # Pobierz postacie z bazy danych
+        saved_characters = auth.session.query(SavedCharacter).filter(
+            SavedCharacter.user_id == user_id
+        ).order_by(SavedCharacter.created_at.desc()).all()
+
+        return [
+            SavedCharacterResponse(
+                id=char.id,
+                name=char.name,
+                character_class=char.character_class,
+                stats=char.stats,
+                appearance=char.appearance,
+                description=char.description,
+                moves=char.moves,
+                equipment=char.equipment,
+                created_at=char.created_at,
+                updated_at=char.updated_at
+            ) for char in saved_characters
+        ]
+
+    except Exception as e:
+        print(f"Error fetching saved characters: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Błąd podczas pobierania zapisanych postaci: {str(e)}"
+        )
+
+
+@router.get("/saved-characters/stats", response_model=Dict[str, int])
+async def get_characters_stats(
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> Dict[str, int]:
+    """
+    Pobiera statystyki zapisanych postaci użytkownika.
+    """
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    user_id = auth.verify_token(access_token, "access")
+
+    try:
+        # Pobierz statystyki z bazy danych
+        total_characters = auth.session.query(SavedCharacter).filter(
+            SavedCharacter.user_id == user_id
+        ).count()
+
+        # Pobierz liczbę postaci utworzonych w tym miesiącu
+        current_month = datetime.now().replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0)
+        characters_this_month = auth.session.query(SavedCharacter).filter(
+            SavedCharacter.user_id == user_id,
+            SavedCharacter.created_at >= current_month
+        ).count()
+
+        return {
+            "total": total_characters,
+            "this_month": characters_this_month
+        }
+
+    except Exception as e:
+        print(f"Error fetching character stats: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Błąd podczas pobierania statystyk postaci: {str(e)}"
+        )
+
+
+@router.get("/saved-characters/{character_id}", response_model=SavedCharacterResponse)
+async def get_character(
+    character_id: int,
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> SavedCharacterResponse:
+    """
+    Pobiera pojedynczą postać użytkownika.
+    Dostęp ma tylko właściciel postaci.
+    """
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    user_id = auth.verify_token(access_token, "access")
+
+    try:
+        # Pobierz postać z bazy danych
+        character = auth.session.query(SavedCharacter).filter(
+            SavedCharacter.id == character_id
+        ).first()
+
+        if not character:
+            raise HTTPException(
+                status_code=404,
+                detail="Postać nie została znaleziona"
+            )
+
+        # Sprawdź czy użytkownik jest właścicielem postaci
+        if character.user_id != user_id:
+            raise HTTPException(
+                status_code=403,
+                detail="Nie masz uprawnień do wyświetlenia tej postaci"
+            )
+
+        return SavedCharacterResponse(
+            id=character.id,
+            name=character.name,
+            character_class=character.character_class,
+            stats=character.stats,
+            appearance=character.appearance,
+            description=character.description,
+            moves=character.moves,
+            equipment=character.equipment,
+            created_at=character.created_at,
+            updated_at=character.updated_at
+        )
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Error fetching character: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Błąd podczas pobierania postaci: {str(e)}"
+        )

@@ -1,36 +1,33 @@
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { LoginForm } from '@/components/partials/login-form'
-import { createFileRoute } from '@tanstack/react-router'
-import { GalleryVerticalEnd } from 'lucide-react'
 
 export const Route = createFileRoute('/login/')({
-  component: RouteComponent,
-})
-
-function RouteComponent() {
-  return (
-    <div className="grid min-h-[95vh] lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            Przewodnik Apokalipsy
-          </a>
+  beforeLoad: ({ context }) => {
+    if (context.auth.isAuthenticated) {
+      throw redirect({
+        to: '/dashboard',
+      })
+    }
+  },
+  component: () => {
+    return (
+      <div className="container relative min-h-[95vh] flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+        <div className="relative hidden h-full flex-col bg-[image:url('/login-img.jpg')] bg-cover bg-center bg-black bg-blend-darken bg-opacity-60 p-10 lg:flex dark:border-r">
+          <div className="relative z-20 mt-auto">
+            <blockquote className="space-y-2 text-white">
+              <p className="text-lg">
+                &ldquo;Świat Apokalipsy to niedobór wszystkiego, wiesz jak jest...&rdquo;
+              </p>
+              <footer className="text-sm">Chopper</footer>
+            </blockquote>
+          </div>
         </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
+        <div className="lg:p-8">
+          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <LoginForm />
           </div>
         </div>
       </div>
-      <div className="relative hidden bg-muted lg:block">
-        <img
-          src="/login-img.jpg"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover brightness-[0.7] grayscale"
-        />
-      </div>
-    </div>
-  )
-}
+    )
+  },
+})

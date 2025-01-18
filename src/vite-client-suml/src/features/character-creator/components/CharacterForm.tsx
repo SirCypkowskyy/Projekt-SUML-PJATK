@@ -14,12 +14,13 @@ import { useWeaponCreation } from '../hooks/useWeaponCreation';
 import { GeneratedCharacter, Move } from '../types';
 import { AVAILABLE_CLASSES, CharacterClass } from '../constants/character';
 import { getAvailableMoves } from '../api';
+import { useQuery } from '@tanstack/react-query';
 
 interface CharacterFormProps {
     character: GeneratedCharacter;
     isEditing: boolean;
     showCharacterImage: boolean;
-    getAvailableMoves: (characterClass: CharacterClass) => Move[];
+    getAvailableMoves: (characterClass: CharacterClass) => Promise<Move[]>;
     onCharacterChange: (character: GeneratedCharacter) => void;
     onEditToggle: () => void;
     onShowImage: () => void;
@@ -83,7 +84,10 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
         });
     };
 
-    const availableMoves = getAvailableMoves(character.characterClass);
+    const { data: availableMoves, isLoading: availableMovesLoading } = useQuery({
+        queryKey: ['availableMoves', character.characterClass],
+        queryFn: () => getAvailableMoves(character.characterClass),
+    });
 
     return (
         <motion.div
@@ -186,15 +190,15 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                                 isEditing={isEditing}
                                 onStatChange={handleStatChange}
                             />
-
-                            {/* Moves */}
-                            <CharacterMoves
-                                availableMoves={availableMoves}
-                                selectedMoves={character.moves}
-                                isEditing={isEditing}
-                                onMoveSelect={handleMoveSelect}
-                                onMoveRemove={handleMoveRemove}
-                            />
+                            {availableMovesLoading ? <p>Loading...</p> : (
+                                <CharacterMoves
+                                    availableMoves={availableMoves || []}
+                                    selectedMoves={character.moves}
+                                    isEditing={isEditing}
+                                    onMoveSelect={handleMoveSelect}
+                                    onMoveRemove={handleMoveRemove}
+                                />
+                            )}
 
                             {/* Equipment */}
                             <CharacterEquipment

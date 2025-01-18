@@ -48,15 +48,16 @@ export function LoginForm({
         <div className="grid gap-2">
           <div className="flex items-center">
             <Label htmlFor="password">Hasło</Label>
-            <a
+           
+          </div>
+          <Input name="password" id="password" type="password" required />
+        </div>
+        <a
               href="#"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               Zapomniałeś hasła?
             </a>
-          </div>
-          <Input name="password" id="password" type="password" required />
-        </div>
         <Button type="submit" className="w-full">
           Zaloguj się
         </Button>
