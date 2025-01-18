@@ -20,8 +20,7 @@ export function LoginForm({
     const password = formData.get("password") as string;
     login(username, password).then((successfull) => {
       // sprawdzenie, czy jest authenticated po 0,5 sekundy
-      if (successfull)
-      {
+      if (successfull) {
         toast.success("Zalogowano pomyślnie");
         setTimeout(() => {
           navigate({ to: "/dashboard" });
@@ -48,16 +47,16 @@ export function LoginForm({
         <div className="grid gap-2">
           <div className="flex items-center">
             <Label htmlFor="password">Hasło</Label>
-           
+
           </div>
           <Input name="password" id="password" type="password" required />
         </div>
         <a
-              href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              Zapomniałeś hasła?
-            </a>
+          href="#"
+          className="ml-auto text-sm underline-offset-4 hover:underline"
+        >
+          Zapomniałeś hasła?
+        </a>
         <Button type="submit" className="w-full">
           Zaloguj się
         </Button>
