@@ -1532,6 +1532,7 @@ dependencies = [
     { name = "langsmith" },
     { name = "markdown" },
     { name = "nltk" },
+    { name = "openai" },
     { name = "python-dotenv" },
     { name = "unstructured", extra = ["md"] },
 ]
@@ -1547,6 +1548,7 @@ requires-dist = [
     { name = "langsmith", specifier = ">=0.2.10" },
     { name = "markdown", specifier = ">=3.7" },
     { name = "nltk", specifier = ">=3.9.1" },
+    { name = "openai", specifier = ">=1.59.3" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "unstructured", extras = ["md"], specifier = ">=0.16.11" },
 ]
