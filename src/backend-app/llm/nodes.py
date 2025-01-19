@@ -219,7 +219,7 @@ def generate_image(state: GraphState):
     )
 
     # chain = prompt | model
-    image_url = DallEAPIWrapper(model="dall-e-3", size="512x512").run(prompt)
+    image_url = DallEAPIWrapper(model="dall-e-3").run(prompt)
     return {"messages": state["messages"], "image_url": image_url}
 
 
