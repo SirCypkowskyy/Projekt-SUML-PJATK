@@ -205,17 +205,28 @@ def build_character_attributes(state: GraphState):
 
 # Node
 def generate_image(state: GraphState):
+    model = ChatOpenAI(model="gpt-4o-mini", temperature=0.5)
     appearance = state["summary"]["appearance"]
     description = state["summary"]["description"]
-    prompt = f"""
-        Using the provided appearance: \n\n {appearance} \n\n and description: \n\n {description} \n\n of a character, compose a detailed and vivid description suitable for DALL-E to generate an image.
+    prompt = PromptTemplate(
+        """
+        Using the provided appearance and description of a character, compose a detailed and vivid description suitable for DALL-E to generate an image.
         The image should depict a fully visible character—not just the face—in a post-apocalyptic world.
         Include intricate details about the character's clothing, equipment, surroundings, and pose to create an immersive and visually striking scene.
+        Image cannot contain any text or logos.
+        Character should be sad and determined, with a sense of loss and hope.
         The scene should feature cinematic lighting, gritty textures, dramatic shadows, post-apocalyptic themes, a warm and dusty color palette, high-definition quality, realistic details, and bold composition --ar 16:9.
-        """
 
-    # response = openai_client.images.generate(model="dall-e-3", prompt=prompt, n=1)
-    image_url = DallEAPIWrapper(model="dall-e-3").run(prompt)
+        Appearance: {appearance}
+        Description: {description}
+        """,
+        input_variables=["appearance", "description"],
+    )
+
+    chain = prompt | model
+    image_url = DallEAPIWrapper(model="dall-e-3").run(
+        chain.invoke({"appearance": appearance, "description": description})
+    )
     return {"messages": state["messages"], "image_url": image_url}
 
 
