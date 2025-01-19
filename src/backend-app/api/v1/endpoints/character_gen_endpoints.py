@@ -7,7 +7,7 @@ from helpers.auth_helper import AuthHelper
 from deps import get_auth_helper
 from data.models import UserRoleEnum, SavedCharacter, CharacterImage
 from api.v1.endpoints.auth import ACCESS_TOKEN_COOKIE
-from datetime import datetime
+from datetime import datetime, timezone
 from llm.llm_graph import graph
 from langgraph.types import Command
 
@@ -648,8 +648,8 @@ async def generate_character_image(
         character_image = CharacterImage(
             character_id=character_id,
             image_url=resp["image_url"],
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
         )
 
         auth.session.add(character_image)
