@@ -202,8 +202,7 @@ def generate_image(state: GraphState):
     # model = ChatOpenAI(model="gpt-4o-mini", temperature=0.5)
     appearance = state["summary"]["appearance"]
     description = state["summary"]["description"]
-    prompt = (
-        f"""
+    prompt = f"""
         Using the provided appearance and description of a character, create a detailed and vivid image of the character.
         The image should depict a fully visible character—not just the face—in a post-apocalyptic world.
         Include intricate details about the character's clothing, equipment, surroundings, and pose to create an immersive and visually striking scene.
@@ -213,8 +212,7 @@ def generate_image(state: GraphState):
 
         Appearance: \n\n {appearance} \n\n
         Description: \n\n {description} \n\n
-        """,
-    )
+        """
 
     # chain = prompt | model
     image_url = DallEAPIWrapper(model="dall-e-3").run(prompt)
