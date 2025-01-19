@@ -203,7 +203,7 @@ def generate_image(state: GraphState):
     appearance = state["summary"]["appearance"]
     description = state["summary"]["description"]
     prompt = PromptTemplate(
-        """
+        template="""
         Using the provided appearance and description of a character, compose a detailed and vivid description suitable for DALL-E to generate an image.
         The image should depict a fully visible character—not just the face—in a post-apocalyptic world.
         Include intricate details about the character's clothing, equipment, surroundings, and pose to create an immersive and visually striking scene.
@@ -211,8 +211,8 @@ def generate_image(state: GraphState):
         Character should be sad and determined, with a sense of loss and hope.
         The scene should feature cinematic lighting, gritty textures, dramatic shadows, post-apocalyptic themes, a warm and dusty color palette, high-definition quality, realistic details, and bold composition --ar 16:9.
 
-        Appearance: {appearance}
-        Description: {description}
+        Appearance: \n\n {appearance} \n\n
+        Description: \n\n {description} \n\n
         """,
         input_variables=["appearance", "description"],
     )
