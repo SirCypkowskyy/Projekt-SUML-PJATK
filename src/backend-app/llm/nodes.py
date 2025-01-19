@@ -213,8 +213,6 @@ def generate_image(state: GraphState):
 
         Appearance: \n\n {appearance} \n\n
         Description: \n\n {description} \n\n
-
-        Your output shold not be longer than 500 characters.
         """,
     )
 
