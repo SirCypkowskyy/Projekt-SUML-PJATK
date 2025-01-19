@@ -99,9 +99,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
             <Card className="border-2 shadow-lg bg-card">
                 <CardContent className="pt-6">
                     <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
-                        {/* Left column - character data */}
                         <div className="space-y-6">
-                            {/* Basic info */}
                             <div className="space-y-2">
                                 {isEditing ? (
                                     <input
@@ -146,7 +144,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                                 )}
                             </div>
 
-                            {/* Appearance and description */}
+                            {/* Wygląd i opis */}
                             <div className="space-y-4">
                                 <div>
                                     <h3 className="font-semibold mb-2">Wygląd</h3>
@@ -184,7 +182,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                                 </div>
                             </div>
 
-                            {/* Stats */}
+                            {/* Statystyki */}
                             <CharacterStats
                                 stats={character.stats}
                                 isEditing={isEditing}
@@ -200,7 +198,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                                 />
                             )}
 
-                            {/* Equipment */}
+                            {/* Sprzęt */}
                             <CharacterEquipment
                                 equipment={character.equipment}
                                 isEditing={isEditing}
@@ -209,7 +207,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                             />
                         </div>
 
-                        {/* Right column - character image */}
+                        {/* Kolumna po prawej - wizerunek postaci */}
                         <div className="relative">
                             {showCharacterImage ? (
                                 <motion.div
@@ -237,7 +235,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                 </CardContent>
             </Card>
 
-            {/* Action buttons */}
+            {/* Przyciski akcji */}
             <div className="flex flex-col justify-between">
                 <div className="flex flex-wrap gap-4 justify-center">
                     <Button
