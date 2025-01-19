@@ -5,7 +5,7 @@
  */
 export const formatStat = (value: number | undefined): string => {
     const stat = value ?? 0;
-    return stat >= 0 ? `+${stat}` : `-${stat}`;
+    return stat >= 0 ? `+${stat}` : `${stat}`;
 };
 
 /**

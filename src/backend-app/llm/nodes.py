@@ -220,6 +220,6 @@ def generate_image(state: GraphState):
 
 
 # Edge
-def human_interrupt_new_image():
+def human_interrupt_new_image(state: GraphState):
     human_message = interrupt("human_input")
     return human_message["is_new_image"].lower() == "yes"

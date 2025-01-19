@@ -72,6 +72,8 @@ class GeneratedCharacter(BaseModel):
     """Lista ruchów wygenerowanej postaci"""
     equipment: List[Equipment]
     """Lista elementów ekwipunku wygenerowanej postaci"""
+    character_image_url: Optional[str]
+    """URL do obrazu postaci"""
 
 
 class InitialInfo(BaseModel):
@@ -782,6 +784,9 @@ async def generate_character(
 
         if "character_specs" not in resp or "summary" not in resp:
             raise ValueError("Nieprawidłowa odpowiedź z LangGraph - brak wymaganych danych")
+        
+        print(f"Resp: {resp}")
+        print(f"Resp image_url: {resp['image_url']}")
 
         character = GeneratedCharacter(
             name=resp["character_specs"]["name"],
@@ -839,7 +844,10 @@ async def generate_character(
                 )
                 for stuff in resp["character_specs"]["stuffs"]
             ],
+            character_image_url=resp["image_url"] if "image_url" in resp else "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEHp9Th4i6BORcPXDqvl0Pnvw-mKeSWUQvdw&s",
         )
+        
+        
 
         return character
 

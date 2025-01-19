@@ -153,7 +153,11 @@ export const generateCharacter = async (initialInfo: InitialInfo, questions: Que
         throw error;
     }
 
-    return data as GeneratedCharacter;
+    return {
+        ...data,
+        characterClass: data.characterClass as CharacterClass,
+        characterImageUrl: data.character_image_url
+    } as GeneratedCharacter;
 };
 
 /**

@@ -226,7 +226,9 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
 
     try {
       const generatedCharacter = await generateCharacter(initialInfo, fetchedQuestionsObject?.questions || [], answers);
+      console.log("Wygenerowana postać:", generatedCharacter);
       setGeneratedCharacter(generatedCharacter);
+      setShowCharacterImage(true);
     } catch (error) {
       console.error('Błąd podczas generowania postaci:', error);
       toast.error("Nie udało się wygenerować postaci");
@@ -330,6 +332,7 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
   const handleCreateCharacterImage = async () => {
     console.log("handleCreateCharacterImage");
     await new Promise((resolve) => setTimeout(resolve, 2000));
+    console.log('Character image: ', generatedCharacter?.characterImageUrl);
     console.log("handleCreateCharacterImage done");
   };
 

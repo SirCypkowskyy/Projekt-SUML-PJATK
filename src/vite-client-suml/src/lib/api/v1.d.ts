@@ -698,6 +698,8 @@ export interface components {
             moves: components["schemas"]["Move"][];
             /** Equipment */
             equipment: components["schemas"]["Equipment"][];
+            /** Character Image Url */
+            character_image_url: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
