@@ -199,12 +199,12 @@ def build_character_attributes(state: GraphState):
 
 # Node
 def generate_image(state: GraphState):
-    model = ChatOpenAI(model="gpt-4o-mini", temperature=0.5)
+    # model = ChatOpenAI(model="gpt-4o-mini", temperature=0.5)
     appearance = state["summary"]["appearance"]
     description = state["summary"]["description"]
-    prompt = PromptTemplate(
-        template="""
-        Using the provided appearance and description of a character, compose a detailed and vivid description suitable for DALL-E to generate an image.
+    prompt = (
+        f"""
+        Using the provided appearance and description of a character, create a detailed and vivid image of the character.
         The image should depict a fully visible character—not just the face—in a post-apocalyptic world.
         Include intricate details about the character's clothing, equipment, surroundings, and pose to create an immersive and visually striking scene.
         Image cannot contain any text or logos.
@@ -216,13 +216,10 @@ def generate_image(state: GraphState):
 
         Your output shold not be longer than 500 characters.
         """,
-        input_variables=["appearance", "description"],
     )
 
-    chain = prompt | model
-    image_url = DallEAPIWrapper(model="dall-e-3").run(
-        chain.invoke({"appearance": appearance, "description": description})
-    )
+    # chain = prompt | model
+    image_url = DallEAPIWrapper(model="dall-e-3", size="512x512").run(prompt)
     return {"messages": state["messages"], "image_url": image_url}
 
 
