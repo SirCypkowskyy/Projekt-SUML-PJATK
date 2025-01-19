@@ -2,4 +2,5 @@
 Pakiet zawierający moduły do obsługi modeli językowych
 """
 
-from .llm_graph import graph, Command, GraphState 
+from .llm_graph import graph
+from .nodes import GraphState
