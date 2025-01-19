@@ -7,6 +7,7 @@ from .nodes import (
     GraphState,
     generate_image,
     generate_questions,
+    human_interrupt_new_image,
     human_input,
     human_interrupt_new_image,
     summarizer,
@@ -43,6 +44,7 @@ workflow.add_edge("retrieve_character_sheet", "choose_class")
 workflow.add_edge("choose_class", "get_moves")
 workflow.add_edge("get_moves", "build_character_attributes")
 workflow.add_edge("build_character_attributes", "generate_image")
+
 workflow.add_conditional_edges(
     "generate_image",
     human_interrupt_new_image,
@@ -51,7 +53,7 @@ workflow.add_conditional_edges(
         False: END,
     },
 )
-# workflow.add_edge("generate_image", END)
+
 
 checkpointer = MemorySaver()
 

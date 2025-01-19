@@ -164,12 +164,6 @@ def get_moves(state: GraphState):
     print(f"Character specs: {response}")
     return {"messages": state["messages"], "moves": response}
 
-    # Follow the structured json output format.
-    # name: ...
-    # moves: [{{"basic_moves": "Dostajesz wszystkie ruchy podstawowe", "class_moves": [{{"name": ..., "description": ...}}]}}]
-    # traits: [{{"name": ..., "modifier": ...}}]
-    # stuffs: [{{"name": ..., "additional_info": ..., "isRemovable": ..., "isWeapon": ..., "options": ...}}]
-
 
 # Node
 def build_character_attributes(state: GraphState):
