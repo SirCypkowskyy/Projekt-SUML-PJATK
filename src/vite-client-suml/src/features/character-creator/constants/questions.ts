@@ -18,7 +18,7 @@ export const QuestionSchema: z.ZodObject<{ id: z.ZodNumber; question: z.ZodStrin
      * Kontekst pytania
      * @type {z.ZodOptional<z.ZodString>}
      */
-    context: z.string().max(100).describe("Kontekst pytania").optional(),
+    context: z.string().max(100).describe("Kontekst pytania").optional()
 });
 
 /**

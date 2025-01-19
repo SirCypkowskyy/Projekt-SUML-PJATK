@@ -3,6 +3,8 @@ from datetime import datetime
 from typing import Optional, List
 from enum import Enum, IntEnum
 from sqlalchemy import JSON, Column
+from sqlalchemy.orm import relationship
+from .database import engine
 
 class UserRoleEnum(IntEnum):
     """Role użytkowników w systemie"""
@@ -25,6 +27,8 @@ class User(SQLModel, table=True):
     """Hasło użytkownika"""
     role_id: Optional[int] = Field(default=None, foreign_key="userrole.id")
     """Rola użytkownika"""
+    generation_attempts: int = Field(default=0)
+    """Liczba prób wygenerowania postaci"""
     characters: List["SavedCharacter"] = Relationship(back_populates="user")
 
 class UserRole(SQLModel, table=True):
@@ -200,6 +204,24 @@ class SavedCharacter(SQLModel, table=True):
 
     # Relacja z użytkownikiem
     user: Optional["User"] = Relationship(back_populates="characters")
+    # Relacja z obrazami
+    images: List["CharacterImage"] = Relationship(back_populates="character", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
 # Dodaj relację do klasy User
 User.characters = Relationship(back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+
+class CharacterImage(SQLModel, table=True):
+    """Model obrazu postaci w bazie danych"""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    """Identyfikator obrazu"""
+    character_id: int = Field(foreign_key="savedcharacter.id")
+    """Identyfikator postaci"""
+    image_url: str
+    """URL obrazu"""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    """Data utworzenia"""
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    """Data aktualizacji"""
+
+    # Relacja z SavedCharacter
+    character: Optional["SavedCharacter"] = Relationship(back_populates="images")

@@ -392,7 +392,7 @@ export interface paths {
         put?: never;
         /**
          * Generate Character
-         * @description Generuje postać na podstawie podanych informacji.
+         * @description Generuje postać na podstawie podanych informacji używając LangGraph.
          */
         post: operations["generate_character_api_v1_character_gen_generate_post"];
         delete?: never;
@@ -412,9 +412,7 @@ export interface paths {
         put?: never;
         /**
          * Fetch Creation Questions
-         * @description Pobiera pytania do tworzenia postaci na podstawie informacji początkowych.
-         *     :param initial_info: Informacje początkowe o postaci przy jej generowaniu
-         *     :return: Lista pytań
+         * @description Pobiera pytania do tworzenia postaci na podstawie informacji początkowych używając LangGraph.
          */
         post: operations["fetch_creation_questions_api_v1_character_gen_questions_post"];
         delete?: never;
@@ -496,8 +494,36 @@ export interface paths {
          *     Dostęp ma tylko właściciel postaci.
          */
         get: operations["get_character_api_v1_character_gen_saved_characters__character_id__get"];
-        put?: never;
+        /**
+         * Update Character
+         * @description Aktualizuje zapisaną postać.
+         */
+        put: operations["update_character_api_v1_character_gen_saved_characters__character_id__put"];
         post?: never;
+        /**
+         * Delete Character
+         * @description Usuwa postać z bazy danych.
+         */
+        delete: operations["delete_character_api_v1_character_gen_saved_characters__character_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/character-gen/generate-image/{character_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Character Image
+         * @description Generuje obraz dla istniejącej postaci używając LangGraph.
+         */
+        post: operations["generate_character_image_api_v1_character_gen_generate_image__character_id__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -546,11 +572,11 @@ export interface components {
         Body_generate_character_api_v1_character_gen_generate_post: {
             initial_info: components["schemas"]["InitialInfo"];
             /** Questions */
-            questions: components["schemas"]["Question"][];
+            questions?: components["schemas"]["Question"][] | null;
             /** Answers */
-            answers: {
+            answers?: {
                 [key: string]: string;
-            };
+            } | null;
         };
         /**
          * ChangePasswordRequest
@@ -567,6 +593,26 @@ export interface components {
          * @enum {string}
          */
         CharacterClass: "Mechanik" | "Anioł" | "Chopper" | "Egzekutor" | "Gubernator" | "Guru" | "Kierowca" | "Muza" | "Operator" | "Psychol" | "Tekknik" | "Żyleta";
+        /**
+         * CharacterImage
+         * @description Model dla obrazu postaci
+         */
+        CharacterImage: {
+            /** Character Id */
+            character_id: number;
+            /** Image Url */
+            image_url: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /**
          * CreateUserResponseSchema
          * @description Schema dla odpowiedzi na tworzenie użytkownika
@@ -614,7 +660,10 @@ export interface components {
         Equipment: {
             /** Name */
             name: string;
-            /** Description */
+            /**
+             * Description
+             * @default
+             */
             description: string;
             /**
              * Isremovable
@@ -649,6 +698,8 @@ export interface components {
             moves: components["schemas"]["Move"][];
             /** Equipment */
             equipment: components["schemas"]["Equipment"][];
+            /** Character Image Url */
+            character_image_url: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -724,6 +775,11 @@ export interface components {
             type: string;
             /** Options */
             options?: string[] | null;
+            /**
+             * Guidance
+             * @default
+             */
+            guidance: string;
         };
         /**
          * SavedCharacterResponse
@@ -1448,9 +1504,7 @@ export interface operations {
     };
     generate_character_api_v1_character_gen_generate_post: {
         parameters: {
-            query: {
-                character_class: components["schemas"]["CharacterClass"];
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: {
@@ -1637,6 +1691,109 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SavedCharacterResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_character_api_v1_character_gen_saved_characters__character_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: number;
+            };
+            cookie?: {
+                access_token?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GeneratedCharacter"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedCharacterResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_character_api_v1_character_gen_saved_characters__character_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: number;
+            };
+            cookie?: {
+                access_token?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_character_image_api_v1_character_gen_generate_image__character_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: number;
+            };
+            cookie?: {
+                access_token?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterImage"];
                 };
             };
             /** @description Validation Error */

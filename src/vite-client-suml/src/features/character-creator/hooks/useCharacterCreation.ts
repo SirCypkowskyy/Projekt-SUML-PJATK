@@ -64,6 +64,10 @@ export interface CharacterCreationState {
    * Postać wygenerowana
    */
   generatedCharacter: GeneratedCharacter | null;
+  /**
+   * Czy pytania są generowane
+   */
+  isGeneratingQuestions: boolean;
 }
 
 export interface CharacterCreationActions {
@@ -180,6 +184,7 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [characterClass, setCharacterClass] = useState<CharacterClass | null>(null);
   const [fetchedQuestionsObject, setFetchedQuestionsObject] = useState<FetchedQuestions | null>(null);
+  const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
 
   const navigate = useNavigate();
 
@@ -199,10 +204,17 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
     setSelectedMoves(moves);
   };
 
-  const handleStartQuestionForm = () => {
-    handleCreateQuestions().then(() => {
+  const handleStartQuestionForm = async () => {
+    setIsGeneratingQuestions(true);
+    try {
+      await handleCreateQuestions();
       setIsStartedQuestionForm(true);
-    });
+    } catch (error) {
+      console.error('Błąd podczas generowania pytań:', error);
+      toast.error("Nie udało się wygenerować pytań");
+    } finally {
+      setIsGeneratingQuestions(false);
+    }
   };
 
   const handleShowSummary = () => {
@@ -212,15 +224,18 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
   const handleGenerateCharacter = async () => {
     setIsGeneratingCharacter(true);
 
-    // Implement character generation logic here
-    // This is a placeholder for the actual API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Set generated character data
-    // Update available moves and equipment based on character class
-    const generatedCharacter = await generateCharacter(initialInfo, characterClass || "Mechanik", fetchedQuestionsObject?.questions || [], answers);
-    setGeneratedCharacter(generatedCharacter);
-    setIsGeneratingCharacter(false);
+    try {
+      const generatedCharacter = await generateCharacter(initialInfo, fetchedQuestionsObject?.questions || [], answers);
+      console.log("Wygenerowana postać:", generatedCharacter);
+      setGeneratedCharacter(generatedCharacter);
+      setShowCharacterImage(true);
+    } catch (error) {
+      console.error('Błąd podczas generowania postaci:', error);
+      toast.error("Nie udało się wygenerować postaci");
+    } finally {
+      setIsGeneratingCharacter(false);
+      return;
+    }
   };
 
   const handleBackToQuestions = () => {
@@ -238,7 +253,7 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
     try {
       const questions = await fetchCreationQuestions(initialInfo);
       console.log("Otrzymane pytania:", questions);
-      
+
       if (!questions || questions.length === 0) {
         setFetchedQuestionsObject({
           questions: [],
@@ -284,17 +299,17 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
 
   const handleSaveCharacter = async () => {
     if (!generatedCharacter) {
-        toast.error("Nie można zapisać postaci - brak wygenerowanej postaci");
-        return;
+      toast.error("Nie można zapisać postaci - brak wygenerowanej postaci");
+      return;
     }
 
     try {
-        await saveCharacter(generatedCharacter);
-        toast.success("Postać została zapisana");
-        navigate({ to: "/dashboard/" });
+      await saveCharacter(generatedCharacter);
+      toast.success("Postać została zapisana");
+      navigate({ to: "/dashboard/" });
     } catch (error) {
-        console.error('Błąd podczas zapisywania postaci:', error);
-        toast.error("Nie udało się zapisać postaci");
+      console.error('Błąd podczas zapisywania postaci:', error);
+      toast.error("Nie udało się zapisać postaci");
     }
   };
 
@@ -317,6 +332,7 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
   const handleCreateCharacterImage = async () => {
     console.log("handleCreateCharacterImage");
     await new Promise((resolve) => setTimeout(resolve, 2000));
+    console.log('Character image: ', generatedCharacter?.characterImageUrl);
     console.log("handleCreateCharacterImage done");
   };
 
@@ -338,6 +354,7 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
     characterClass,
     fetchedQuestionsObject,
     generatedCharacter,
+    isGeneratingQuestions,
     handleStartQuestionForm,
     handleGetAvailableMoves,
     handleSelectClass,

@@ -118,7 +118,7 @@ export const fetchCreationQuestions = async (initialInfo: InitialInfo): Promise<
         return data.map((question) => ({
             id: id++,
             question: question.text,
-            context: question.type
+            context: question.guidance
         })) as Question[];
 
     } catch (error) {
@@ -134,19 +134,15 @@ export const fetchCreationQuestions = async (initialInfo: InitialInfo): Promise<
  * @param {Record<string, string>} answers - Odpowiedzi
  * @returns {GeneratedCharacter} - Wygenerowana postać
  */
-export const generateCharacter = async (initialInfo: InitialInfo, characterClass: CharacterClass, questions: Question[], answers: Record<string, string>): Promise<GeneratedCharacter> => {
+export const generateCharacter = async (initialInfo: InitialInfo, questions: Question[], answers: Record<string, string>): Promise<GeneratedCharacter> => {
     const { data, error } = await apiClient.POST("/api/v1/character-gen/generate", {
-        params: {
-            query: {
-                character_class: characterClass
-            }
-        },
         body: {
             initial_info: initialInfo,
             questions: questions.map((question) => ({
                 text: question.question ?? "",
                 type: question.context ?? "",
-                options: []
+                options: [],
+                guidance: question.context ?? ""
             })),
             answers: answers
         }
@@ -157,7 +153,11 @@ export const generateCharacter = async (initialInfo: InitialInfo, characterClass
         throw error;
     }
 
-    return data as GeneratedCharacter;
+    return {
+        ...data,
+        characterClass: data.characterClass as CharacterClass,
+        characterImageUrl: data.character_image_url
+    } as GeneratedCharacter;
 };
 
 /**

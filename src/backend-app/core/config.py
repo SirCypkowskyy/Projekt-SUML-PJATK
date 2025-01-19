@@ -61,6 +61,15 @@ class Settings(BaseSettings):
     """Hasło pierwszego admina"""
 
     BACKEND_CORS_ORIGINS: str
+    
+    LANGCHAIN_TRACING_V2: bool = True
+    """Czy używać Langchain V2"""
+    LANGCHAIN_ENDPOINT: str
+    """Adres endpointu Langchain"""
+    LANGCHAIN_PROJECT: str
+    """Nazwa projektu Langchain"""
+    LANGCHAIN_API_KEY: str
+    """Klucz API Langchain"""
 
     @field_validator("BACKEND_CORS_ORIGINS")
     def assemble_cors_origins(cls, v: ty.Union[str, list[str]]) -> ty.Union[list[str], str]:

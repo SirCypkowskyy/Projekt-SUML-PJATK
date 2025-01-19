@@ -1,4 +1,6 @@
 import { GeneratedCharacter } from "./types/character"
+import { apiClient } from "./lib/api/clients"
+import { components } from "./lib/api/v1"
 
 const API_BASE_URL = '/api/v1'
 
@@ -95,4 +97,38 @@ export async function getAvailableMoves(characterClass: string): Promise<Array<{
     throw new Error('Failed to fetch available moves')
   }
   return response.json()
-} 
+}
+
+export async function generateCharacter(
+  initialInfo: components["schemas"]["InitialInfo"],
+  questions?: components["schemas"]["Question"][] | null,
+  answers?: { [key: string]: string } | null
+): Promise<components["schemas"]["GeneratedCharacter"]> {
+  const { data, error } = await apiClient.POST("/api/v1/character-gen/generate", {
+    body: {
+      initial_info: initialInfo,
+      questions: questions ?? [],
+      answers: answers ?? {}
+    }
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export const deleteCharacter = async (characterId: number) => {
+  const { error } = await apiClient.DELETE('/api/v1/character-gen/saved-characters/{character_id}', {
+    params: {
+      path: {
+        character_id: characterId
+      }
+    }
+  });
+
+  if (error) {
+    throw error;
+  }
+}; 
