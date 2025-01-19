@@ -10,7 +10,7 @@ import os
 SHEETS_PATH = Path("data/karty-postaci/")
 sheets = SHEETS_PATH.glob("*.md")
 
-# Dodanie api openapi dla langchain
+# Dodanie api openai dla langchain
 if not os.environ.get("OPENAI_API_KEY"):
     os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
 
