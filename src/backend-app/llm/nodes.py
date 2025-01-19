@@ -161,7 +161,7 @@ def get_moves(state: GraphState):
     description = f"{state['summary']['appearance']}\n{state['summary']['description']}"
     class_sheet = character_sheet_path.read_text(encoding="utf-8")
     response = chain.invoke({"description": description, "class_sheet": class_sheet})
-    print(f"Character specs: {response}")
+    print(f"Character moves: {response}")
     return {"messages": state["messages"], "moves": response}
 
 
