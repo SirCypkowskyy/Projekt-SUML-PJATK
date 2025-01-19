@@ -212,15 +212,16 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
   const handleGenerateCharacter = async () => {
     setIsGeneratingCharacter(true);
 
-    // Implement character generation logic here
-    // This is a placeholder for the actual API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Set generated character data
-    // Update available moves and equipment based on character class
-    const generatedCharacter = await generateCharacter(initialInfo, characterClass || "Mechanik", fetchedQuestionsObject?.questions || [], answers);
-    setGeneratedCharacter(generatedCharacter);
-    setIsGeneratingCharacter(false);
+    try {
+      const generatedCharacter = await generateCharacter(initialInfo, fetchedQuestionsObject?.questions || [], answers);
+      setGeneratedCharacter(generatedCharacter);
+    } catch (error) {
+      console.error('Błąd podczas generowania postaci:', error);
+      toast.error("Nie udało się wygenerować postaci");
+    } finally {
+      setIsGeneratingCharacter(false);
+      return;
+    }
   };
 
   const handleBackToQuestions = () => {
@@ -238,7 +239,7 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
     try {
       const questions = await fetchCreationQuestions(initialInfo);
       console.log("Otrzymane pytania:", questions);
-      
+
       if (!questions || questions.length === 0) {
         setFetchedQuestionsObject({
           questions: [],
@@ -284,17 +285,17 @@ export const useCharacterCreation = (): CharacterCreationState & CharacterCreati
 
   const handleSaveCharacter = async () => {
     if (!generatedCharacter) {
-        toast.error("Nie można zapisać postaci - brak wygenerowanej postaci");
-        return;
+      toast.error("Nie można zapisać postaci - brak wygenerowanej postaci");
+      return;
     }
 
     try {
-        await saveCharacter(generatedCharacter);
-        toast.success("Postać została zapisana");
-        navigate({ to: "/dashboard/" });
+      await saveCharacter(generatedCharacter);
+      toast.success("Postać została zapisana");
+      navigate({ to: "/dashboard/" });
     } catch (error) {
-        console.error('Błąd podczas zapisywania postaci:', error);
-        toast.error("Nie udało się zapisać postaci");
+      console.error('Błąd podczas zapisywania postaci:', error);
+      toast.error("Nie udało się zapisać postaci");
     }
   };
 

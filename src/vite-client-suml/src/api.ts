@@ -1,4 +1,6 @@
 import { GeneratedCharacter } from "./types/character"
+import { apiClient } from "./lib/api/clients"
+import { components } from "./lib/api/v1"
 
 const API_BASE_URL = '/api/v1'
 
@@ -97,26 +99,22 @@ export async function getAvailableMoves(characterClass: string): Promise<Array<{
   return response.json()
 }
 
-export async function generateCharacter(characterClass: string, initialInfo: any): Promise<GeneratedCharacter> {
-  const response = await fetch(`${API_BASE_URL}/character-gen/generate?character_class=${characterClass}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+export async function generateCharacter(
+  initialInfo: components["schemas"]["InitialInfo"],
+  questions?: components["schemas"]["Question"][] | null,
+  answers?: { [key: string]: string } | null
+): Promise<components["schemas"]["GeneratedCharacter"]> {
+  const { data, error } = await apiClient.POST("/api/v1/character-gen/generate", {
+    body: {
       initial_info: initialInfo,
-      questions: initialInfo.questions?.map((question: any) => ({
-        text: question.question ?? "",
-        type: question.context ?? "",
-        options: [],
-        guidance: ""
-      })) ?? [],
-      answers: initialInfo.answers ?? {}
-    }),
-  })
-  if (!response.ok) {
-    const error = await response.json()
-    throw error
+      questions: questions ?? [],
+      answers: answers ?? {}
+    }
+  });
+
+  if (error) {
+    throw error;
   }
-  return response.json()
+
+  return data;
 } 

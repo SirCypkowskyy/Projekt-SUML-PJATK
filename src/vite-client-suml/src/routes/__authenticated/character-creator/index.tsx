@@ -76,7 +76,7 @@ function CharacterCreator() {
         transition={{ delay: 0.3 }}
       >
         {isGeneratingCharacter ? (
-          <div className="min-h-[50vh] flex items-center justify-center">
+          <div className="flex items-center justify-center">
             <LoadingAnim />
           </div>
         ) : generatedCharacter ? (

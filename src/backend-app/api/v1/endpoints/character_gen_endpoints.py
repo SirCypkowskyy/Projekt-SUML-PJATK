@@ -13,6 +13,7 @@ router = APIRouter()
 
 # Modele Pydantic
 
+
 class Move(BaseModel):
     """Ruch postaci"""
     name: str
@@ -96,6 +97,7 @@ class QuestionAnswers(BaseModel):
     answers: Dict[str, str]
     """Kolekcja id - odpowiedź"""
 
+
 class CharacterClass(str, Enum):
     MECHANIK = "Mechanik"
     ANIOL = "Anioł"
@@ -125,6 +127,8 @@ class SavedCharacterResponse(BaseModel):
     updated_at: datetime
 
 # Endpointy
+
+
 @router.get("/moves/{character_class}", response_model=List[Move])
 async def get_available_moves(
     character_class: CharacterClass,
@@ -250,7 +254,6 @@ async def get_class_description(
 
 @router.post("/generate", response_model=GeneratedCharacter)
 async def generate_character(
-    character_class: CharacterClass,
     initial_info: InitialInfo,
     questions: Optional[List[Question]] = None,
     answers: Optional[Dict[str, str]] = None,
@@ -266,7 +269,9 @@ async def generate_character(
     try:
         # Przygotuj dane wejściowe dla LangGraph
         input_data = {
-            "messages": f"{initial_info.characterBasics}\n\n{initial_info.characterBackground}\n\n{initial_info.characterTraits}\n\n{initial_info.worldDescription}"
+            "messages": f"{initial_info.characterBasics}\n\n{initial_info.characterBackground}\n\n{initial_info.characterTraits}\n\n{initial_info.worldDescription}",
+            "questions": [q.model_dump() for q in (questions or [])],
+            "answers": answers or {}
         }
         
         config = {"configurable": {"thread_id": str(user_id)}}
@@ -274,10 +279,18 @@ async def generate_character(
         # Wywołaj LangGraph
         resp = graph.invoke(input_data, config=config)
         
+        print(f"LangGraph response: {resp}")  # Debug log
+        
+        if not isinstance(resp, dict):
+            raise ValueError("Nieprawidłowa odpowiedź z LangGraph - odpowiedź nie jest słownikiem")
+            
+        if "character_specs" not in resp or "summary" not in resp:
+            raise ValueError("Nieprawidłowa odpowiedź z LangGraph - brak wymaganych danych")
+            
         # Konwertuj odpowiedź z LangGraph na GeneratedCharacter
         character = GeneratedCharacter(
-            name=resp["character_specs"]["name"],
-            characterClass=character_class,
+            name=initial_info.characterBasics.split('.')[0].strip(),  # Tymczasowo bierzemy imię z pierwszego zdania
+            characterClass=resp["character_specs"]["character_class"] if "character_class" in resp["character_specs"] else "Mechanik",
             stats=Stats(
                 cool=int(next(t["modifier"] for t in resp["character_specs"]["traits"] if t["name"].lower() == "cool")),
                 hard=int(next(t["modifier"] for t in resp["character_specs"]["traits"] if t["name"].lower() == "hard")),
@@ -311,7 +324,8 @@ async def generate_character(
 @router.post("/questions", response_model=List[Question])
 async def fetch_creation_questions(
     initial_info: InitialInfo,
-    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
     auth: AuthHelper = Depends(get_auth_helper)
 ) -> List[Question]:
     """
@@ -319,18 +333,18 @@ async def fetch_creation_questions(
     """
     auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     user_id = auth.verify_token(access_token, "access")
-    
+
     try:
         # Przygotuj dane wejściowe dla LangGraph
         input_data = {
             "messages": f"{initial_info.characterBasics}\n\n{initial_info.characterBackground}\n\n{initial_info.characterTraits}\n\n{initial_info.worldDescription}"
         }
-        
+
         config = {"configurable": {"thread_id": str(user_id)}}
-        
+
         # Wywołaj LangGraph
         resp = graph.invoke(input_data, config=config)
-        
+
         # Konwertuj pytania z LangGraph na format API
         questions = [
             Question(
@@ -340,9 +354,9 @@ async def fetch_creation_questions(
             )
             for q in resp["questions"]["questions"]
         ]
-        
+
         return questions
-        
+
     except Exception as e:
         print(f"Failed to fetch creation questions: {e}")
         raise HTTPException(
@@ -480,7 +494,8 @@ async def get_characters_stats(
 @router.get("/saved-characters/{character_id}", response_model=SavedCharacterResponse)
 async def get_character(
     character_id: int,
-    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
     auth: AuthHelper = Depends(get_auth_helper)
 ) -> SavedCharacterResponse:
     """
@@ -536,23 +551,24 @@ async def get_character(
 async def update_character(
     character_id: int,
     character: GeneratedCharacter,
-    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
     auth: AuthHelper = Depends(get_auth_helper)
 ) -> SavedCharacterResponse:
     """
     Aktualizuje zapisaną postać.
     """
     user = auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
-    
+
     # Pobierz postać z bazy danych
     saved_character = auth.session.query(SavedCharacter).filter(
         SavedCharacter.id == character_id,
         SavedCharacter.user_id == user.id
     ).first()
-    
+
     if not saved_character:
         raise HTTPException(status_code=404, detail="Postać nie znaleziona")
-    
+
     # Aktualizuj dane postaci
     saved_character.name = character.name
     saved_character.character_class = character.characterClass
@@ -560,11 +576,12 @@ async def update_character(
     saved_character.appearance = character.appearance
     saved_character.description = character.description
     saved_character.moves = [move.model_dump() for move in character.moves]
-    saved_character.equipment = [equipment.model_dump() for equipment in character.equipment]
+    saved_character.equipment = [equipment.model_dump()
+                                 for equipment in character.equipment]
     saved_character.updated_at = datetime.utcnow()
-    
+
     auth.session.commit()
-    
+
     return SavedCharacterResponse(
         id=saved_character.id,
         name=saved_character.name,
@@ -579,6 +596,8 @@ async def update_character(
     )
 
 # Dodaj nowy model dla obrazu postaci
+
+
 class CharacterImage(BaseModel):
     """Model dla obrazu postaci"""
     character_id: int
@@ -586,10 +605,12 @@ class CharacterImage(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 @router.post("/generate-image/{character_id}", response_model=CharacterImage)
 async def generate_character_image(
     character_id: int,
-    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    access_token: Annotated[Union[str, None],
+                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
     auth: AuthHelper = Depends(get_auth_helper)
 ) -> CharacterImage:
     """
@@ -597,27 +618,27 @@ async def generate_character_image(
     """
     auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     user_id = auth.verify_token(access_token, "access")
-    
+
     # Pobierz postać
     character = auth.session.query(SavedCharacter).filter(
         SavedCharacter.id == character_id,
         SavedCharacter.user_id == user_id
     ).first()
-    
+
     if not character:
         raise HTTPException(status_code=404, detail="Postać nie znaleziona")
-    
+
     try:
         # Przygotuj dane dla LangGraph
         input_data = {
             "messages": f"{character.appearance}\n\n{character.description}"
         }
-        
+
         config = {"configurable": {"thread_id": str(user_id)}}
-        
+
         # Wywołaj LangGraph tylko dla generowania obrazu
         resp = graph.invoke(input_data, config=config)
-        
+
         # Zapisz URL obrazu w bazie danych
         character_image = CharacterImage(
             character_id=character_id,
@@ -625,13 +646,13 @@ async def generate_character_image(
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
         )
-        
+
         auth.session.add(character_image)
         auth.session.commit()
         auth.session.refresh(character_image)
-        
+
         return character_image
-        
+
     except Exception as e:
         auth.session.rollback()
         print(f"Error generating character image: {e}")
