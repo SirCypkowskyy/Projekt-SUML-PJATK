@@ -159,7 +159,7 @@ def get_moves(state: GraphState):
     character_class = state["character_class"]
     character_sheet_path = SHEETS_PATH / f"{character_class}.md"
     description = f"{state['summary']['appearance']}\n{state['summary']['description']}"
-    class_sheet = character_sheet_path.read_text()
+    class_sheet = character_sheet_path.read_text(encoding='utf-8')
     response = chain.invoke({"description": description, "class_sheet": class_sheet})
     print(f"Character specs: {response}")
     return {"messages": state["messages"], "moves": response}
@@ -193,7 +193,7 @@ def build_character_attributes(state: GraphState):
     character_sheet_path = SHEETS_PATH / f"{character_class}.md"
 
     description = f"{state['summary']['appearance']}\n {state['summary']['description']}"
-    class_sheet = character_sheet_path.read_text()
+    class_sheet = character_sheet_path.read_text(encoding='utf-8')
 
     chain = prompt | model_wth_structured_output
     response = chain.invoke(

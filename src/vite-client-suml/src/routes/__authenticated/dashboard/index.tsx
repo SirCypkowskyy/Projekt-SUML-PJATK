@@ -8,11 +8,11 @@ import {
 } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Plus, ArrowRight } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { Plus, ArrowRight, Trash2 } from 'lucide-react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getCharactersStats } from '@/api'
-import { getSavedCharacters } from '@/api'
+import { getCharactersStats, getSavedCharacters, deleteCharacter } from '@/api'
+import { toast } from "sonner"
 
 interface SavedCharacter {
   id: number
@@ -46,6 +46,21 @@ export const Route = createFileRoute('/__authenticated/dashboard/')({
 })
 
 function CharacterCard({ character }: { character: SavedCharacter }) {
+  const queryClient = useQueryClient()
+
+  const handleDelete = async () => {
+    if (window.confirm('Czy na pewno chcesz usunąć tę postać?')) {
+      try {
+        await deleteCharacter(character.id)
+        await queryClient.invalidateQueries({ queryKey: ['saved-characters'] })
+        await queryClient.invalidateQueries({ queryKey: ['characters-stats'] })
+        toast.success("Postać została usunięta")
+      } catch (error) {
+        toast.error("Nie udało się usunąć postaci")
+      }
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -58,12 +73,17 @@ function CharacterCard({ character }: { character: SavedCharacter }) {
           <div className="text-xs text-muted-foreground">
             Utworzono: {character.created_at}
           </div>
-          <Link to={`/character/${character.id}`}>
-            <Button variant="outline" size="sm">
-              Szczegóły
-              <ArrowRight className="ml-2 h-4 w-4" />
+          <div className="flex gap-2">
+            <Button variant="destructive" size="sm" onClick={handleDelete}>
+              <Trash2 className="h-4 w-4" />
             </Button>
-          </Link>
+            <Link to={`/character/${character.id}`}>
+              <Button variant="outline" size="sm">
+                Szczegóły
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </CardContent>
     </Card>

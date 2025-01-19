@@ -27,6 +27,8 @@ class User(SQLModel, table=True):
     """Hasło użytkownika"""
     role_id: Optional[int] = Field(default=None, foreign_key="userrole.id")
     """Rola użytkownika"""
+    generation_attempts: int = Field(default=0)
+    """Liczba prób wygenerowania postaci"""
     characters: List["SavedCharacter"] = Relationship(back_populates="user")
 
 class UserRole(SQLModel, table=True):

@@ -4,14 +4,19 @@ from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_text_splitters import MarkdownHeaderTextSplitter
-
+from core.config import settings
+import os
 
 SHEETS_PATH = Path("data/karty-postaci/")
 sheets = SHEETS_PATH.glob("*.md")
 
+# Dodanie api openapi dla langchain
+if not os.environ.get("OPENAI_API_KEY"):
+    os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
+
 split_document = []
 for sheet in sheets:
-    with open(sheet, "r") as f:
+    with open(sheet, "r", encoding='utf-8') as f:
         raw_markdown = f.read()
         # sheets_raw.append(f.read())
 

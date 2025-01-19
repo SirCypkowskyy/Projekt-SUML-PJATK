@@ -79,7 +79,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
             ...character,
             equipment: [
                 ...character.equipment,
-                { ...newWeapon, isRemovable: true },
+                { ...newWeapon, isRemovable: true, isWeapon: true },
             ],
         });
     };

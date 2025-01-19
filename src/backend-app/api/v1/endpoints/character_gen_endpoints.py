@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from enum import Enum
 from helpers.auth_helper import AuthHelper
 from deps import get_auth_helper
-from data.models import UserRoleEnum, SavedCharacter, CharacterImage
+from data.models import User, UserRoleEnum, SavedCharacter, CharacterImage
 from api.v1.endpoints.auth import ACCESS_TOKEN_COOKIE
 from datetime import datetime, timezone
 from llm.llm_graph import graph
@@ -139,6 +139,19 @@ class SavedCharacterResponse(BaseModel):
 
 # Endpointy
 
+def get_thread_id(user_id: int, auth: AuthHelper) -> str:
+    """
+    Pobiera identyfikator wątku dla użytkownika.
+
+    :param user_id: ID użytkownika
+    :param auth: Helper autentykacji
+    :return: Identyfikator wątku
+    """
+    user = auth.session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Użytkownik nie istnieje")
+    return f"{user_id}-{user.generation_attempts+1}"
+
 
 @router.get("/moves/{character_class}", response_model=List[Move])
 async def get_available_moves(
@@ -151,13 +164,176 @@ async def get_available_moves(
     """
     auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     moves_dict = {
-        CharacterClass.MECHANIK: [
+        CharacterClass.ANIOL: [
             Move(
-                name="Majsterkowicz",
-                description="Kiedy majstrujesz przy sprzęcie, rzuć+spryt. Na 10+ wybierz 3, na 7-9 wybierz 2: działa niezawodnie, działa długo, nie potrzebujesz rzadkich części, nie zajmuje dużo czasu.",
+                name="Szósty zmysł",
+                description="Gdy otwierasz swój mózg na psychiczny wir, rzuć+spryt zamiast rzucać+dziw."
+            ),
+            Move(
+                name="Własna klinika",
+                description="Posiadasz własny szpital, warsztat wyposażony w aparaturę do podtrzymywania życia, laboratorium chemiczne oraz dwuosobowy personel (ekipa). W klinice możesz pracować nad pacjentami tak, jak Technik pracuje nad technologią."
+            ),
+            Move(
+                name="Zawodowe współczucie",
+                description="Gdy pomagasz komuś, kto wykonuje rzut, możesz rzucić+spryt zamiast rzucać+Hx."
+            ),
+            Move(
+                name="Anioł bitwy",
+                description="Kiedy opiekujesz się ludźmi i nie walczysz, dostajesz +1pancerza."
+            ),
+            Move(
+                name="Uzdrawiający dotyk",
+                description="Gdy nakładasz ręce na ciało rannej osoby i otwierasz na nią swój mózg, rzuć+dziw. Na 10+ leczysz 1 segment. Na 7–9 również leczysz 1 segment, ale działasz pod presją ze strony mózgu swojego pacjenta."
+            ),
+            Move(
+                name="Naznaczony przez śmierć",
+                description="Jeśli pacjent będący pod twoją opieką umrze, dostajesz +1dziw (max. +3)."
             )
         ],
-        # ... dodaj pozostałe klasy
+        CharacterClass.CHOPPER: [
+            Move(
+                name="Przywódca gangu",
+                description="Masz gang motocyklowy (3-osobowy). W gangu panuje lojalność (+1 lojalność). W kryzysie twój gang będzie trzymał się razem."
+            ),
+            Move(
+                name="Alfa gangu",
+                description="Gdy chcesz, by twój gang zrobił coś, rzuć+hart. Na 10+ wszyscy wykonują twoje polecenie. Na 7-9 robią to, ale możesz wybrać 1: niechętnie, niechlujnie lub szemrając."
+            ),
+            Move(
+                name="Jatka",
+                description="Gdy twój gang walczy ramię w ramię z tobą, otrzymujesz +1pancerza."
+            ),
+            Move(
+                name="Taktyk",
+                description="Gdy twój gang wykonuje zorganizowany manewr pod twoim przywództwem, rzuć+spryt. Na 10+ wybierz 3. Na 7-9 wybierz 2: wykonują to szybko, cicho, minimalizują straty, maksymalizują straty, minimalizują chaos."
+            )
+        ],
+        CharacterClass.EGZEKUTOR: [
+            Move(
+                name="Merytoryczne podejście",
+                description="Kiedy wykonujesz agresywny ruch, możesz rzucić+spryt zamiast rzucać+hart."
+            ),
+            Move(
+                name="Bojowy refleks",
+                description="Kiedy w walce wyrzucisz 12+, możesz wyeliminować przeciwnika z walki bez zadawania obrażeń (np. rozbroić, powalić, zastraszyć)."
+            ),
+            Move(
+                name="Niebezpieczny & Sexy",
+                description="Kiedy wchodzisz w napiętą sytuację, możesz rzucić+urok zamiast rzucać+hart."
+            )
+        ],
+        CharacterClass.GUBERNATOR: [
+            Move(
+                name="Bogactwo",
+                description="Jeśli twoje schronienie jest bezpieczne, na początku sesji otrzymujesz 2-barter."
+            ),
+            Move(
+                name="Forteca",
+                description="Twoje schronienie jest wyjątkowo bezpieczne. Kiedy dajesz rozkazy swojej załodze, rzuć+hart. Na 10+ wykonują twoje polecenia sprawnie i skutecznie. Na 7-9 wykonują je, ale wybierz 1: powoli, niechlujnie lub narzekając."
+            ),
+            Move(
+                name="Przywództwo",
+                description="Kiedy musisz zmotywować swoją załogę, rzuć+urok. Na 10+ wszyscy wykonują twoje polecenia bez pytań. Na 7-9 wykonują je, ale możesz wybrać 1: niechętnie, chaotycznie lub po swojemu."
+            )
+        ],
+        CharacterClass.GURU: [
+            Move(
+                name="Magnetyczna osobowość",
+                description="Kiedy spotykasz kogoś po raz pierwszy, rzuć+dziw. Na 10+ możesz zadać im 3 pytania z listy. Na 7-9 zadaj 1 pytanie."
+            ),
+            Move(
+                name="Hipnotyczny głos",
+                description="Kiedy dajesz komuś rozkaz, rzuć+dziw. Na 10+ wykonują go bez wahania. Na 7-9 wykonują, ale mogą się później opamiętać."
+            ),
+            Move(
+                name="Wizjoner",
+                description="Kiedy otwierasz swój umysł na psychiczny wir, otrzymujesz +1 do rzutu."
+            )
+        ],
+        CharacterClass.KIEROWCA: [
+            Move(
+                name="Szósty bieg",
+                description="Kiedy uciekasz lub ścigasz kogoś, rzuć+spryt. Na 10+ udaje ci się bez problemu. Na 7-9 musisz wybrać: bezpiecznie ale wolno, lub szybko ale ryzykownie."
+            ),
+            Move(
+                name="Mechaniczna więź",
+                description="Kiedy pracujesz nad swoim pojazdem, rzuć+spryt. Na 10+ wybierz 3 ulepszenia. Na 7-9 wybierz 1: szybszy, bezpieczniejszy, lepiej opancerzony, lepiej uzbrojony."
+            ),
+            Move(
+                name="Król drogi",
+                description="Kiedy jesteś za kierownicą, otrzymujesz +1 do wszystkich rzutów związanych z prowadzeniem pojazdu."
+            )
+        ],
+        CharacterClass.MUZA: [
+            Move(
+                name="Artystyczna dusza",
+                description="Kiedy występujesz przed publicznością, rzuć+urok. Na 10+ wybierz 3. Na 7-9 wybierz 1: zdobywasz fanów, zarabiasz barter, inspirujesz innych, przekazujesz wiadomość."
+            ),
+            Move(
+                name="Hipnotyczny występ",
+                description="Kiedy występujesz, możesz próbować manipulować kimś z publiczności. Rzuć+urok. Na 10+ robią to, co chcesz. Na 7-9 robią to, ale z pewnym wahaniem."
+            ),
+            Move(
+                name="Inspiracja",
+                description="Kiedy pomagasz komuś, kto cię podziwia, dodajesz +2 zamiast +1."
+            )
+        ],
+        CharacterClass.OPERATOR: [
+            Move(
+                name="Profesjonalista",
+                description="Kiedy wykonujesz swoją robotę, rzuć+spryt. Na 10+ wszystko idzie zgodnie z planem. Na 7-9 jest prawie dobrze, ale wybierz 1 komplikację."
+            ),
+            Move(
+                name="Przygotowany",
+                description="Kiedy potrzebujesz specjalistycznego sprzętu, rzuć+spryt. Na 10+ masz dokładnie to, czego potrzebujesz. Na 7-9 masz coś podobnego."
+            ),
+            Move(
+                name="Improwizacja",
+                description="Kiedy musisz użyć czegoś nie po jego przeznaczeniu, rzuć+spryt. Na 10+ działa idealnie. Na 7-9 działa, ale z ograniczeniami."
+            )
+        ],
+        CharacterClass.PSYCHOL: [
+            Move(
+                name="Szaleństwo",
+                description="Kiedy wpadasz w szał, rzuć+dziw. Na 10+ wybierz 3. Na 7-9 wybierz 1: zadajesz więcej obrażeń, otrzymujesz mniej obrażeń, wzbudzasz strach, ignorujesz ból."
+            ),
+            Move(
+                name="Nieobliczalny",
+                description="Kiedy ktoś próbuje cię przejrzeć, rzuć+dziw. Na 10+ nie mogą cię rozgryźć. Na 7-9 są zdezorientowani."
+            ),
+            Move(
+                name="Głosy",
+                description="Kiedy otwierasz swój umysł na psychiczny wir, rzuć+dziw. Na 10+ otrzymujesz przydatną informację. Na 7-9 informacja jest niejasna lub niepełna."
+            )
+        ],
+        CharacterClass.TEKKNIK: [
+            Move(
+                name="Majsterkowicz",
+                description="Kiedy majstrujesz przy sprzęcie, rzuć+spryt. Na 10+ wybierz 3. Na 7-9 wybierz 2: działa niezawodnie, działa długo, nie potrzebujesz rzadkich części, nie zajmuje dużo czasu."
+            ),
+            Move(
+                name="Złota rączka",
+                description="Kiedy naprawiasz coś w stresującej sytuacji, rzuć+spryt. Na 10+ naprawiasz bez problemu. Na 7-9 naprawiasz, ale wybierz 1: zajmuje to więcej czasu, potrzebujesz dodatkowych części, nie będzie działać długo."
+            ),
+            Move(
+                name="Wynalazca",
+                description="Kiedy tworzysz coś nowego, rzuć+spryt. Na 10+ działa dokładnie tak, jak chciałeś. Na 7-9 działa, ale ma jakąś wadę lub ograniczenie."
+            )
+        ],
+        CharacterClass.ZYLETA: [
+            Move(
+                name="Zabójczy refleks",
+                description="Kiedy ktoś próbuje cię zaskoczyć, rzuć+spryt. Na 10+ masz przewagę. Na 7-9 reagujesz w ostatniej chwili."
+            ),
+            Move(
+                name="Śmiertelny taniec",
+                description="W walce wręcz zadajesz +1 obrażeń i otrzymujesz +1 pancerza."
+            ),
+            Move(
+                name="Zimna krew",
+                description="Kiedy działasz pod presją w walce, rzuć+spokój zamiast rzucać+hart."
+            )
+        ],
     }
 
     if character_class not in moves_dict:
@@ -181,7 +357,146 @@ async def get_base_equipment(
         CharacterClass.MECHANIK: [
             Equipment(name="Skórzany kombinezon", description="1-pancerz", isRemovable=False)
         ],
-        # ... dodaj pozostałe klasy
+        CharacterClass.ANIOL: [
+            Equipment(name="Apteczka anioła", description="Podstawowe wyposażenie medyczne", isRemovable=True),
+            Equipment(name="Różności", description="Wartość: 1-barter", isRemovable=True),
+            Equipment(name="Ubranie robocze", description="1-pancerz", isRemovable=False)
+        ],
+        CharacterClass.CHOPPER: [
+            Equipment(name="Ubranie motocyklisty", description="2-pancerz", isRemovable=False),
+            Equipment(
+                name="Motocykl",
+                description="moc+1, wygląd+1, 1-pancerza",
+                isRemovable=False,
+                options=[
+                    {"name": "zalety", "effect": "szybki, wytrzymały, agresywny, mocno podkręcony, wielki, zwrotny"},
+                    {"name": "wygląd", "effect": "opływowy kształt, vintage, mocno odchudzony, rycząca bestia, masywny, muskularny, szpanerski, luksusowy"},
+                    {"name": "słabości", "effect": "wolny, zaniedbany, cholernie dużo pali, drobny, niestabilny, kapryśny, zawodny"}
+                ]
+            )
+        ],
+        CharacterClass.EGZEKUTOR: [
+            Equipment(name="Pancerz", description="2-pancerz", isRemovable=False),
+            Equipment(name="Różności", description="Wartość: 1-barter", isRemovable=True)
+        ],
+        CharacterClass.GUBERNATOR: [
+            Equipment(
+                name="Posiadłość",
+                description="75-150 dusz, prowizoryczne zabudowania, zbrojownia, gang 40 osób",
+                isRemovable=False,
+                options=[
+                    {"name": "fuchy", "effect": "polowanie, uprawy, szabrownictwo (nadwyżka: 1-barter, potrzeba: +głód)"},
+                    {"name": "zabudowania", "effect": "prowizoryczne z betonu, blachy i drutu zbrojeniowego (+1pancerza dla gangu)"},
+                    {"name": "zbrojownia", "effect": "prowizoryczna i znaleziona broń"},
+                    {"name": "gang", "effect": "40 osób (3-rany, gang, średni, niezdyscyplinowany, 1-pancerza)"}
+                ]
+            )
+        ],
+        CharacterClass.GURU: [
+            Equipment(name="Różności", description="Wartość: 2-barter", isRemovable=True),
+            Equipment(
+                name="Wyznawcy",
+                description="20 wyznawców, lojalni ale nie fanatyczni",
+                isRemovable=False,
+                options=[
+                    {"name": "fortuna", "effect": "+1"},
+                    {"name": "nadwyżka", "effect": "1-barter"},
+                    {"name": "potrzeba", "effect": "dezercja"}
+                ]
+            )
+        ],
+        CharacterClass.KIEROWCA: [
+            Equipment(name="Różności", description="Wartość: 2-barter", isRemovable=True),
+            Equipment(
+                name="Auto",
+                description="Wybierz profil: Moc+2 Wygląd+1 1-Pancerza Słabość+1",
+                isRemovable=False,
+                options=[
+                    {"name": "typ", "effect": "Coupe, kompakt, sedan, jeep, pickup, van, ciężarówka, bus, limuzyna, ambulans, auto z napędem na cztery koła, ciągnik"},
+                    {"name": "zalety", "effect": "Szybki, wytrzymały, agresywny, podkręcony, wielki, terenowy, zwrotny, kompatybilny, pojemny, niezawodny, łatwy w naprawie"},
+                    {"name": "wygląd", "effect": "Opływowy kształt, vintage, w idealnym stanie, potężny, luksusowy, szpanerski, muskularny, dziwaczny, ładny"},
+                    {"name": "słabości", "effect": "Wolny, delikatna budowa, zaniedbany, kapryśny, ciasny, dużo pali, zawodny, głośny, skoki prędkości"}
+                ]
+            )
+        ],
+        CharacterClass.MUZA: [
+            Equipment(name="Różności", description="Wartość: 1-barter", isRemovable=True),
+            Equipment(
+                name="Luksusowy sprzęt",
+                description="Wybierz 2 sztuki",
+                isRemovable=True,
+                options=[
+                    {"name": "zabytkowe monety", "effect": "zakładane, wartościowe, mogą być używane jako biżuteria"},
+                    {"name": "okulary", "effect": "zakładane, wartościowe, +1spryt gdy wzrok ma znaczenie"},
+                    {"name": "długi piękny płaszcz", "effect": "zakładany, wartościowy"},
+                    {"name": "niesamowite tatuaże", "effect": "implant"},
+                    {"name": "kosmetyki", "effect": "nakładane, wartościowe, +1 do następnego rzutu na urok"},
+                    {"name": "zwierzę", "effect": "wartościowe, żywe"}
+                ]
+            )
+        ],
+        CharacterClass.OPERATOR: [
+            Equipment(name="9mm", description="2-rany, bliski, głośny", isRemovable=True, isWeapon=True),
+            Equipment(name="Różności", description="Wartość: 1-barter", isRemovable=True),
+            Equipment(name="Ubranie", description="1-pancerz", isRemovable=False)
+        ],
+        CharacterClass.PSYCHOL: [
+            Equipment(name="Różności", description="Wartość: 5-barter", isRemovable=True),
+            Equipment(name="Ubranie", description="1-pancerz", isRemovable=False),
+            Equipment(
+                name="Sprzęt psychola",
+                description="Wybierz 2 rzeczy",
+                isRemovable=True,
+                options=[
+                    {"name": "strzykawka z implantem", "effect": "dotyk, hi-tech, +1rana do ruchów psychola"},
+                    {"name": "transmiter fal mózgowych", "effect": "obszarowy, bliski, hi-tech"},
+                    {"name": "meta-narkotyki", "effect": "dotyk, hi-tech, +1zatrzymanie"},
+                    {"name": "rękawica psychogwałtu", "effect": "ramię, hi-tech, dotyk liczy się jako czas i fizyczna bliskość"},
+                    {"name": "projektor fal bólu", "effect": "1-rana, ppanc, obszarowy, głośny, przeładowanie, hi-tech"},
+                    {"name": "psychiczne stopery", "effect": "zakładane, hi-tech, chronią przed ruchami i sprzętem psychola"}
+                ]
+            )
+        ],
+        CharacterClass.TEKKNIK: [
+            Equipment(name="Różności", description="Wartość: 3-barter", isRemovable=True),
+            Equipment(
+                name="Warsztat",
+                description="Wybierz 3 elementy",
+                isRemovable=False,
+                options=[
+                    {"name": "garaż", "effect": "Miejsce do naprawy pojazdów"},
+                    {"name": "ciemnia", "effect": "Miejsce do wywoływania zdjęć i eksperymentów"},
+                    {"name": "kontrolowana przestrzeń hodowlana", "effect": "Miejsce do hodowli roślin i eksperymentów"},
+                    {"name": "wykwalifikowani pracownicy", "effect": "Np. Carna, Thuy, Pamming"},
+                    {"name": "góra złomu", "effect": "Materiały do wykorzystania"},
+                    {"name": "ciężarówka lub samochód towarowy", "effect": "Transport"},
+                    {"name": "dziwaczna elektronika", "effect": "Specjalistyczny sprzęt"},
+                    {"name": "narzędzia do obróbki materiałów", "effect": "Podstawowe wyposażenie"},
+                    {"name": "transmitery i receptory", "effect": "Sprzęt komunikacyjny"},
+                    {"name": "teren doświadczalny", "effect": "Miejsce do testów"},
+                    {"name": "relikt złotej ery", "effect": "Zaawansowana technologia"},
+                    {"name": "miny i pułapki", "effect": "Systemy obronne"}
+                ]
+            )
+        ],
+        CharacterClass.ZYLETA: [
+            Equipment(name="Różności", description="Wartość: 2-barter", isRemovable=True),
+            Equipment(name="Ubranie", description="1-pancerz lub 2-pancerz", isRemovable=False),
+            Equipment(
+                name="Spersonalizowana broń",
+                description="Wybierz 2 sztuki",
+                isRemovable=True,
+                isWeapon=True,
+                options=[
+                    {"name": "katana", "effect": "3-rany, bliski, cenny"},
+                    {"name": "sztylet", "effect": "2-rany, intymny"},
+                    {"name": "ukryta broń", "effect": "2-rany, intymny, ukryty"},
+                    {"name": "pistolet", "effect": "2-rany, bliski, głośny, przeładowanie"},
+                    {"name": "bicz", "effect": "1-rana, obszarowy, bliski"},
+                    {"name": "kastety", "effect": "1-rana, intymny"}
+                ]
+            )
+        ]
     }
 
     if character_class not in equipment_dict:
@@ -211,7 +526,184 @@ async def get_available_weapons(
                 options=[{"name": "wzmocniony", "effect": "+1rana"}],
             )
         ],
-        # ... dodaj pozostałe klasy
+        CharacterClass.ANIOL: [
+            Equipment(
+                name="mała praktyczna broń",
+                description="2-rany, bliski",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.CHOPPER: [
+            Equipment(
+                name="magnum",
+                description="3-rany, bliski, przeładowanie, głośny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="pistolet maszynowy",
+                description="2-rany, bliski, obszarowy, głośny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="maczeta",
+                description="2-rany, bliski",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.EGZEKUTOR: [
+            Equipment(
+                name="wielka broń",
+                description="3-rany, bliski, obszarowy, forsowny, głośny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="poważna broń",
+                description="2-rany, bliski, głośny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="zapasowa broń",
+                description="2-rany, bliski, głośny",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.GUBERNATOR: [
+            Equipment(
+                name="ozdobna broń",
+                description="2-rany, bliski, cenny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="praktyczna broń",
+                description="2-rany, bliski, głośny",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.GURU: [
+            Equipment(
+                name="broń ceremonialna",
+                description="2-rany, bliski, cenny",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.KIEROWCA: [
+            Equipment(
+                name="pistolet",
+                description="2-rany, bliski, głośny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="strzelba",
+                description="3-rany, bliski, forsowny, głośny",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.MUZA: [
+            Equipment(
+                name="ukryta broń",
+                description="2-rany, intymny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="elegancka broń",
+                description="2-rany, bliski, cenny",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.OPERATOR: [
+            Equipment(
+                name="9mm",
+                description="2-rany, bliski, głośny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="wizytówka",
+                description="3-rany, bliski, głośny",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.PSYCHOL: [
+            Equipment(
+                name="dziwaczna broń",
+                description="2-rany, bliski, obszarowy",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="ukryta broń",
+                description="2-rany, intymny",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.TEKKNIK: [
+            Equipment(
+                name="improwizowana broń",
+                description="2-rany, bliski",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="dziwaczna broń",
+                description="2-rany, obszarowy, głośny",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ],
+        CharacterClass.ZYLETA: [
+            Equipment(
+                name="katana",
+                description="3-rany, bliski, cenny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="sztylet",
+                description="2-rany, intymny",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="ukryta broń",
+                description="2-rany, intymny, ukryty",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="pistolet",
+                description="2-rany, bliski, głośny, przeładowanie",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="bicz",
+                description="1-rana, obszarowy, bliski",
+                isRemovable=True,
+                isWeapon=True
+            ),
+            Equipment(
+                name="kastety",
+                description="1-rana, intymny",
+                isRemovable=True,
+                isWeapon=True
+            )
+        ]
     }
 
     if character_class not in weapons_dict:
@@ -231,18 +723,18 @@ async def get_class_description(
     """
     auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     descriptions = {
-        CharacterClass.ANIOL: "Leżysz w piachu Świata Apokalipsy, z akami na wierzchu...",
-        CharacterClass.CHOPPER: "Świat Apokalipsy to niedobór wszystkiego, wiesz jak jest...",
-        CharacterClass.EGZEKUTOR: "Świat Apokalipsy jest podły, ohydny i pełen przemocy...",
-        CharacterClass.GUBERNATOR: "W Świecie Apokalipsy nie istnieje rząd ani zorganizowane społeczeństwo...",
-        CharacterClass.GURU: "Teraz powinno być już jasne jak słońce, że bogowie opuścili Świat Apokalipsy...",
-        CharacterClass.KIEROWCA: "Wraz z nadejściem apokalipsy nastąpił rozpad infrastruktury złotej ery...",
-        CharacterClass.MUZA: "Nawet w plugawym Świecie Apokalipsy istnieje jedzenie...",
-        CharacterClass.OPERATOR: "W Świecie Apokalipsy musisz pracować z tym, co masz pod ręką, prawda?...",
-        CharacterClass.PSYCHOL: "Psychole są najbardziej popierdolonymi psychicznymi mózgojebami w Świecie Apokalipsy...",
-        CharacterClass.TEKKNIK: "Jest jedna rzecz, na którą zawsze można liczyć w Świecie Apokalipsy: wszystko się psuje.",
-        CharacterClass.ZYLETA: "Nawet w tak niebezpiecznym miejscu jak Świat Apokalipsy, żylety są, cóż...",
-        CharacterClass.MECHANIK: "Mechanik to człowiek, który zna się na sprzęcie. Nie zna się na sprzęcie? To nie jest mechanik.",
+        CharacterClass.ANIOL: "Leżysz w piachu Świata Apokalipsy, z akami na wierzchu, a twój anioł stróż to ktoś z apteczką i igłą. Kiedy wszystko się wali, kiedy gang się wykrwawia, kiedy zaraza pustoszy osadę, kiedy dzieciak ma złamane obie nogi - wtedy wzywasz anioła. Oni są od tego.",
+        CharacterClass.CHOPPER: "Świat Apokalipsy to niedobór wszystkiego, wiesz jak jest. Nie ma wystarczająco dużo benzyny, amunicji, wody, drutu kolczastego, mięsa, czasu ani niczego. Ale jest jedna rzecz, której jest pod dostatkiem: dupków. Chopperzy to ci, którzy organizują tych dupków i robią z nich gang.",
+        CharacterClass.EGZEKUTOR: "Świat Apokalipsy jest podły, ohydny i pełen przemocy. Twój egzekutor jest w tym wszystkim jak ryba w wodzie. Nie ma dla niego znaczenia, czy chodzi o walkę wręcz, czy o wymianę ognia - on po prostu wie, jak zabijać.",
+        CharacterClass.GUBERNATOR: "W Świecie Apokalipsy nie istnieje rząd ani zorganizowane społeczeństwo. Kiedy ktoś chce coś zbudować, musi zacząć od zera. Gubernatorzy to ci, którzy próbują stworzyć coś z niczego, zebrać ludzi i zasoby, by przetrwać w tym brutalnym świecie.",
+        CharacterClass.GURU: "Teraz powinno być już jasne jak słońce, że bogowie opuścili Świat Apokalipsy. Guru to ci, którzy wypełniają tę pustkę, oferując nowe wierzenia i nadzieję w świecie, który stracił wszystko. Są przewodnikami duchowymi, manipulatorami i wizjonerami.",
+        CharacterClass.KIEROWCA: "Wraz z nadejściem apokalipsy nastąpił rozpad infrastruktury złotej ery. Drogi zarosły, mosty się zawaliły, a paliwo stało się na wagę złota. Kierowcy to ci, którzy mimo wszystko potrafią przemierzać ten wrogi świat, prowadząc swoje maszyny przez pustkowia.",
+        CharacterClass.MUZA: "Nawet w plugawym Świecie Apokalipsy istnieje piękno i sztuka. Muzy to artyści, którzy potrafią zaczarować innych swoim talentem, wykorzystując swój urok i charyzmę do przetrwania w tym brutalnym świecie.",
+        CharacterClass.OPERATOR: "W Świecie Apokalipsy musisz pracować z tym, co masz pod ręką. Operatorzy to specjaliści od załatwiania spraw - czy to przez negocjacje, czy przez bardziej bezpośrednie metody. Są ekspertami od przetrwania w świecie, gdzie wszystko ma swoją cenę.",
+        CharacterClass.PSYCHOL: "Psychole są najbardziej popierdolonymi psychicznymi mózgojebami w Świecie Apokalipsy. Są nieprzewidywalni, niebezpieczni i często obdarzeni dziwnymi mocami, które pozwalają im manipulować umysłami innych.",
+        CharacterClass.TEKKNIK: "Jest jedna rzecz, na którą zawsze można liczyć w Świecie Apokalipsy: wszystko się psuje. Tekknicy to ci, którzy potrafią naprawiać i tworzyć rzeczy z resztek starego świata, wykorzystując swoją wiedzę i umiejętności do budowania czegoś nowego.",
+        CharacterClass.ZYLETA: "Nawet w tak niebezpiecznym miejscu jak Świat Apokalipsy, żylety są wyjątkowe. Są jak nęcące błękitne iskry - nie możesz oderwać od nich wzroku, choć wiesz, że zbliżenie się do nich może być śmiertelnie niebezpieczne. Łączą w sobie piękno i śmiertelne niebezpieczeństwo.",
+        CharacterClass.MECHANIK: "Mechanik to człowiek, który zna się na sprzęcie. W świecie, gdzie każda maszyna jest na wagę złota, a części zamienne są rzadkością, mechanicy są na wagę złota. Potrafią utrzymać przy życiu stare maszyny i tworzyć nowe z resztek starego świata."
     }
 
     if character_class not in descriptions:
@@ -264,14 +756,21 @@ async def generate_character(
     """
     auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     user_id = auth.verify_token(access_token, "access")
+    user = auth.session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Użytkownik nie istnieje")
 
     try:
         input_answers = {"answers": [{"answer": answers.get(str(i))} for i in range(1, 4)]}
 
-        config = {"configurable": {"thread_id": str(user_id)}}
+        config = {"configurable": {"thread_id": get_thread_id(user_id, auth)}}
 
         # Wywołaj LangGraph
         resp = graph.invoke(Command(resume=input_answers), config=config)
+
+        # Zwiększ licznik prób generowania
+        user.generation_attempts += 1
+        auth.session.commit()
 
         print(f"Moves: {resp['moves']}")
         print(f"Stuffs: {resp['character_specs']['stuffs']}")
@@ -361,14 +860,18 @@ async def fetch_creation_questions(
     """
     auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     user_id = auth.verify_token(access_token, "access")
-
+    user = auth.session.get(User, user_id)
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Użytkownik nie istnieje")
+    
     try:
         # Przygotuj dane wejściowe dla LangGraph
         input_data = {
             "messages": f"{initial_info.characterBasics}\n\n{initial_info.characterBackground}\n\n{initial_info.characterTraits}\n\n{initial_info.worldDescription}"
         }
 
-        config = {"configurable": {"thread_id": str(user_id)}}
+        config = {"configurable": {"thread_id": get_thread_id(user_id, auth)}}
 
         # Wywołaj LangGraph
         resp = graph.invoke(input_data, config=config)
@@ -564,17 +1067,17 @@ async def update_character(
     Aktualizuje zapisaną postać.
     """
     user = auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
-
+    
     # Pobierz postać z bazy danych
     saved_character = (
         auth.session.query(SavedCharacter)
         .filter(SavedCharacter.id == character_id, SavedCharacter.user_id == user.id)
         .first()
     )
-
+    
     if not saved_character:
         raise HTTPException(status_code=404, detail="Postać nie znaleziona")
-
+    
     # Aktualizuj dane postaci
     saved_character.name = character.name
     saved_character.character_class = character.characterClass
@@ -584,9 +1087,9 @@ async def update_character(
     saved_character.moves = [move.model_dump() for move in character.moves]
     saved_character.equipment = [equipment.model_dump() for equipment in character.equipment]
     saved_character.updated_at = datetime.utcnow()
-
+    
     auth.session.commit()
-
+    
     return SavedCharacterResponse(
         id=saved_character.id,
         name=saved_character.name,
@@ -624,6 +1127,9 @@ async def generate_character_image(
     """
     auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     user_id = auth.verify_token(access_token, "access")
+    user = auth.session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Użytkownik nie istnieje")
 
     # Pobierz postać
     character = (
@@ -639,7 +1145,7 @@ async def generate_character_image(
         # Przygotuj dane dla LangGraph
         input_data = {"messages": f"{character.appearance}\n\n{character.description}"}
 
-        config = {"configurable": {"thread_id": str(user_id)}}
+        config = {"configurable": {"thread_id": get_thread_id(user_id, auth)}}
 
         # Wywołaj LangGraph tylko dla generowania obrazu
         resp = graph.invoke(input_data, config=config)
@@ -663,4 +1169,34 @@ async def generate_character_image(
         print(f"Error generating character image: {e}")
         raise HTTPException(
             status_code=500, detail=f"Błąd podczas generowania obrazu postaci: {str(e)}"
-        )
+    )
+
+
+# Usuwanie postaci
+@router.delete("/saved-characters/{character_id}")
+async def delete_character(
+    character_id: int,
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper),
+) -> None:
+    """Usuwa postać z bazy danych."""
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    user_id = auth.verify_token(access_token, "access")
+
+    # Pobierz postać z bazy danych
+    character = (
+        auth.session.query(SavedCharacter).filter(SavedCharacter.id == character_id, SavedCharacter.user_id == user_id).first()
+    )
+    
+    if not character:
+        raise HTTPException(status_code=404, detail="Postać nie znaleziona")
+    
+    # Zobacz, czy postać należy do użytkownika
+    if character.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Nie masz uprawnień do usuwania tej postaci")
+    
+    # Usuń postać z bazy danych
+    auth.session.delete(character)
+    auth.session.commit()
+
+    return {"message": "Postać została usunięta"}

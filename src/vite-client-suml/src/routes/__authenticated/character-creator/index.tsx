@@ -22,6 +22,7 @@ function CharacterCreator() {
     showCharacterImage,
     isEditingCharacter,
     isGeneratingCharacter,
+    isGeneratingQuestions,
     generatedCharacter,
     fetchedQuestionsObject,
     handleCreateCharacterImage,
@@ -75,9 +76,12 @@ function CharacterCreator() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
-        {isGeneratingCharacter ? (
-          <div className="flex items-center justify-center">
+        {isGeneratingCharacter || isGeneratingQuestions ? (
+          <div className="flex flex-col items-center justify-center gap-4">
             <LoadingAnim />
+            <p className="text-lg text-muted-foreground">
+              {isGeneratingQuestions ? "Generuję pytania..." : "Generuję postać..."}
+            </p>
           </div>
         ) : generatedCharacter ? (
           <CharacterForm
