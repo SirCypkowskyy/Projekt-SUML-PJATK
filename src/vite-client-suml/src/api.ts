@@ -117,4 +117,18 @@ export async function generateCharacter(
   }
 
   return data;
-} 
+}
+
+export const deleteCharacter = async (characterId: number) => {
+  const { error } = await apiClient.DELETE('/api/v1/character-gen/saved-characters/{character_id}', {
+    params: {
+      path: {
+        character_id: characterId
+      }
+    }
+  });
+
+  if (error) {
+    throw error;
+  }
+}; 

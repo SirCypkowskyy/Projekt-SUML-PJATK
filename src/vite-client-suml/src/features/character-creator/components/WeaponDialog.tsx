@@ -47,8 +47,12 @@ export const WeaponDialog: React.FC<WeaponDialogProps> = ({
     const handleCreateWeapon = () => {
         if (selectedBase) {
             const weapon = {
-                name: `${selectedBase.name} ${selectedOptions.map(o => o.name).join(", ")}`,
-                description: `${selectedBase.description} ${selectedOptions.map(o => o.effect).join(", ")}`,
+                name: selectedOptions.length > 0 
+                    ? `${selectedBase.name} ${selectedOptions.map(o => o.name).join(", ")}`
+                    : selectedBase.name,
+                description: selectedOptions.length > 0
+                    ? `${selectedBase.description} ${selectedOptions.map(o => o.effect).join(", ")}`
+                    : selectedBase.description,
             };
             onWeaponCreate(weapon);
             handleClose();
@@ -67,7 +71,7 @@ export const WeaponDialog: React.FC<WeaponDialogProps> = ({
                 <DialogHeader>
                     <DialogTitle>Stwórz broń</DialogTitle>
                     <DialogDescription>
-                        Wybierz podstawę broni i jej modyfikacje
+                        Wybierz podstawę broni i opcjonalne modyfikacje
                     </DialogDescription>
                 </DialogHeader>
 
@@ -99,59 +103,61 @@ export const WeaponDialog: React.FC<WeaponDialogProps> = ({
                         )}
                     </div>
 
-                    <div className="space-y-2">
-                        <div className="flex justify-between">
-                            <h4 className="font-medium">Modyfikacje (wybierz 2)</h4>
-                            <span className="text-sm text-muted-foreground">
-                                {selectedOptions.length}/2
-                            </span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                            {selectedBase?.options
-                                ?.filter(option => !selectedOptions.find(o => o.name === option.name))
-                                .map((option) => (
-                                    <Button
-                                        key={option.name}
-                                        variant="outline"
-                                        className="justify-start"
-                                        disabled={selectedOptions.length >= 2}
-                                        onClick={() => setSelectedOptions([...selectedOptions, option])}
-                                    >
-                                        {option.name} ({option.effect})
-                                    </Button>
-                                ))}
-                        </div>
+                    {selectedBase?.options && (
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <h4 className="font-medium">Modyfikacje (opcjonalne)</h4>
+                                <span className="text-sm text-muted-foreground">
+                                    {selectedOptions.length}/2
+                                </span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                {selectedBase.options
+                                    .filter(option => !selectedOptions.find(o => o.name === option.name))
+                                    .map((option) => (
+                                        <Button
+                                            key={option.name}
+                                            variant="outline"
+                                            className="justify-start"
+                                            disabled={selectedOptions.length >= 2}
+                                            onClick={() => setSelectedOptions([...selectedOptions, option])}
+                                        >
+                                            {option.name} ({option.effect})
+                                        </Button>
+                                    ))}
+                            </div>
 
-                        <div className="space-y-2 mt-4">
-                            {selectedOptions.map((option) => (
-                                <div
-                                    key={option.name}
-                                    className="flex items-center justify-between p-2 bg-muted rounded-lg"
-                                >
-                                    <span>
-                                        {option.name} ({option.effect})
-                                    </span>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() =>
-                                            setSelectedOptions(
-                                                selectedOptions.filter(o => o.name !== option.name)
-                                            )
-                                        }
+                            <div className="space-y-2 mt-4">
+                                {selectedOptions.map((option) => (
+                                    <div
+                                        key={option.name}
+                                        className="flex items-center justify-between p-2 bg-muted rounded-lg"
                                     >
-                                        <X className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            ))}
+                                        <span>
+                                            {option.name} ({option.effect})
+                                        </span>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() =>
+                                                setSelectedOptions(
+                                                    selectedOptions.filter(o => o.name !== option.name)
+                                                )
+                                            }
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <DialogFooter>
                     <Button
                         onClick={handleCreateWeapon}
-                        disabled={!selectedBase || selectedOptions.length !== 2}
+                        disabled={!selectedBase}
                     >
                         Dodaj broń
                     </Button>

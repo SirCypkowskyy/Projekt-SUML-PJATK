@@ -500,7 +500,11 @@ export interface paths {
          */
         put: operations["update_character_api_v1_character_gen_saved_characters__character_id__put"];
         post?: never;
-        delete?: never;
+        /**
+         * Delete Character
+         * @description Usuwa postać z bazy danych.
+         */
+        delete: operations["delete_character_api_v1_character_gen_saved_characters__character_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -694,6 +698,8 @@ export interface components {
             moves: components["schemas"]["Move"][];
             /** Equipment */
             equipment: components["schemas"]["Equipment"][];
+            /** Character Image Url */
+            character_image_url: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1722,6 +1728,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SavedCharacterResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_character_api_v1_character_gen_saved_characters__character_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: number;
+            };
+            cookie?: {
+                access_token?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

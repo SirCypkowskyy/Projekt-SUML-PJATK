@@ -9,6 +9,7 @@ from .nodes import (
     generate_questions,
     human_interrupt_new_image,
     human_input,
+    human_interrupt_new_image,
     summarizer,
     retrieve_node,
     choose_class,
@@ -44,7 +45,6 @@ workflow.add_edge("choose_class", "get_moves")
 workflow.add_edge("get_moves", "build_character_attributes")
 workflow.add_edge("build_character_attributes", "generate_image")
 
-# workflow.add_edge("generate_image", END)
 workflow.add_conditional_edges(
     "generate_image",
     human_interrupt_new_image,
