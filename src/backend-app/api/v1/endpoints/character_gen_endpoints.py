@@ -4,14 +4,14 @@ from pydantic import BaseModel
 from enum import Enum
 from helpers.auth_helper import AuthHelper
 from deps import get_auth_helper
-from data.models import UserRoleEnum, SavedCharacter
+from data.models import UserRoleEnum, SavedCharacter, CharacterImage
 from api.v1.endpoints.auth import ACCESS_TOKEN_COOKIE
 from datetime import datetime
+from llm.langgraph import graph, Command
 
 router = APIRouter()
 
 # Modele Pydantic
-
 
 class Move(BaseModel):
     """Ruch postaci"""
@@ -25,7 +25,7 @@ class Equipment(BaseModel):
     """Ekwipunek postaci"""
     name: str
     """Nazwa ekwipunku"""
-    description: str
+    description: str = ""
     """Opis ekwipunku"""
     isRemovable: bool = False
     """Czy ekwipunek można zdjąć"""
@@ -87,15 +87,14 @@ class Question(BaseModel):
     """Typ pytania"""
     options: Optional[List[str]] = None
     """Opcje pytania"""
+    guidance: str = ""
+    """Wskazówka do pytania"""
 
 
 class QuestionAnswers(BaseModel):
     """Odpowiedzi na pytania"""
     answers: Dict[str, str]
     """Kolekcja id - odpowiedź"""
-
-# Dodaj enum dla klas postaci
-
 
 class CharacterClass(str, Enum):
     MECHANIK = "Mechanik"
@@ -126,8 +125,6 @@ class SavedCharacterResponse(BaseModel):
     updated_at: datetime
 
 # Endpointy
-
-
 @router.get("/moves/{character_class}", response_model=List[Move])
 async def get_available_moves(
     character_class: CharacterClass,
@@ -253,62 +250,105 @@ async def get_class_description(
 
 @router.post("/generate", response_model=GeneratedCharacter)
 async def generate_character(
-    initial_info: InitialInfo,
     character_class: CharacterClass,
-    questions: List[Question],
-    answers: Dict[str, str],
-    access_token: Annotated[Union[str, None],
-                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    initial_info: InitialInfo,
+    questions: Optional[List[Question]] = None,
+    answers: Optional[Dict[str, str]] = None,
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
     auth: AuthHelper = Depends(get_auth_helper)
 ) -> GeneratedCharacter:
     """
-    Generuje postać na podstawie podanych informacji.
+    Generuje postać na podstawie podanych informacji używając LangGraph.
     """
     auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     user_id = auth.verify_token(access_token, "access")
-    print(f"Generating character with: {initial_info}, {character_class}, {questions}, {answers}")
 
-    # Pobierz ruchy i ekwipunek dla danej klasy
-    moves = await get_available_moves(character_class, access_token, auth)
-    equipment = await get_base_equipment(character_class, access_token, auth)
-
-    return GeneratedCharacter(
-        name="John Doe",
-        characterClass=character_class,
-        stats=Stats(cool=1, hard=1, hot=1, sharp=1, weird=1),
-        appearance="Chudy chłopak ze wsi",
-        description="John Doe",
-        moves=moves,
-        equipment=equipment
-    )
+    try:
+        # Przygotuj dane wejściowe dla LangGraph
+        input_data = {
+            "messages": f"{initial_info.characterBasics}\n\n{initial_info.characterBackground}\n\n{initial_info.characterTraits}\n\n{initial_info.worldDescription}"
+        }
+        
+        config = {"configurable": {"thread_id": str(user_id)}}
+        
+        # Wywołaj LangGraph
+        resp = graph.invoke(input_data, config=config)
+        
+        # Konwertuj odpowiedź z LangGraph na GeneratedCharacter
+        character = GeneratedCharacter(
+            name=resp["character_specs"]["name"],
+            characterClass=character_class,
+            stats=Stats(
+                cool=int(next(t["modifier"] for t in resp["character_specs"]["traits"] if t["name"].lower() == "cool")),
+                hard=int(next(t["modifier"] for t in resp["character_specs"]["traits"] if t["name"].lower() == "hard")),
+                hot=int(next(t["modifier"] for t in resp["character_specs"]["traits"] if t["name"].lower() == "hot")),
+                sharp=int(next(t["modifier"] for t in resp["character_specs"]["traits"] if t["name"].lower() == "sharp")),
+                weird=int(next(t["modifier"] for t in resp["character_specs"]["traits"] if t["name"].lower() == "weird"))
+            ),
+            appearance=resp["summary"]["appearance"],
+            description=resp["summary"]["description"],
+            moves=[Move(name=move["name"], description=move["description"]) 
+                  for move in resp["character_specs"]["moves"]["class_moves"]],
+            equipment=[Equipment(
+                name=stuff["name"],
+                description=stuff["additional_info"],
+                isRemovable=stuff.get("isRemovable", False),
+                isWeapon=stuff.get("isWeapon", False),
+                options=stuff.get("options", None)
+            ) for stuff in resp["character_specs"]["stuffs"]]
+        )
+        
+        return character
+        
+    except Exception as e:
+        print(f"Error generating character: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Błąd podczas generowania postaci: {str(e)}"
+        )
 
 
 @router.post("/questions", response_model=List[Question])
 async def fetch_creation_questions(
     initial_info: InitialInfo,
-    access_token: Annotated[Union[str, None],
-                            Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
     auth: AuthHelper = Depends(get_auth_helper)
 ) -> List[Question]:
     """
-    Pobiera pytania do tworzenia postaci na podstawie informacji początkowych.
-    :param initial_info: Informacje początkowe o postaci przy jej generowaniu
-    :return: Lista pytań
+    Pobiera pytania do tworzenia postaci na podstawie informacji początkowych używając LangGraph.
     """
     auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
     user_id = auth.verify_token(access_token, "access")
-    print(f"fetching questions with initialInfo: {initial_info}")
+    
     try:
-        # questions = await get_creation_questions()
+        # Przygotuj dane wejściowe dla LangGraph
+        input_data = {
+            "messages": f"{initial_info.characterBasics}\n\n{initial_info.characterBackground}\n\n{initial_info.characterTraits}\n\n{initial_info.worldDescription}"
+        }
+        
+        config = {"configurable": {"thread_id": str(user_id)}}
+        
+        # Wywołaj LangGraph
+        resp = graph.invoke(input_data, config=config)
+        
+        # Konwertuj pytania z LangGraph na format API
         questions = [
-            Question(text="Jakie jest twoje imię?", type="text"),
-            Question(text="Jakie dane ma twój bohater?", type="text")
+            Question(
+                text=q["question"],
+                type="text",
+                guidance=q["guidance"]
+            )
+            for q in resp["questions"]["questions"]
         ]
-        print(f"questions fetched: {questions}")
+        
         return questions
+        
     except Exception as e:
         print(f"Failed to fetch creation questions: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=500,
+            detail=f"Błąd podczas pobierania pytań: {str(e)}"
+        )
 
 
 @router.post("/save", response_model=GeneratedCharacter)
@@ -516,11 +556,11 @@ async def update_character(
     # Aktualizuj dane postaci
     saved_character.name = character.name
     saved_character.character_class = character.characterClass
-    saved_character.stats = character.stats.dict()
+    saved_character.stats = character.stats.model_dump()
     saved_character.appearance = character.appearance
     saved_character.description = character.description
-    saved_character.moves = [move.dict() for move in character.moves]
-    saved_character.equipment = [equipment.dict() for equipment in character.equipment]
+    saved_character.moves = [move.model_dump() for move in character.moves]
+    saved_character.equipment = [equipment.model_dump() for equipment in character.equipment]
     saved_character.updated_at = datetime.utcnow()
     
     auth.session.commit()
@@ -537,3 +577,65 @@ async def update_character(
         created_at=saved_character.created_at,
         updated_at=saved_character.updated_at
     )
+
+# Dodaj nowy model dla obrazu postaci
+class CharacterImage(BaseModel):
+    """Model dla obrazu postaci"""
+    character_id: int
+    image_url: str
+    created_at: datetime
+    updated_at: datetime
+
+@router.post("/generate-image/{character_id}", response_model=CharacterImage)
+async def generate_character_image(
+    character_id: int,
+    access_token: Annotated[Union[str, None], Cookie(alias=ACCESS_TOKEN_COOKIE)] = None,
+    auth: AuthHelper = Depends(get_auth_helper)
+) -> CharacterImage:
+    """
+    Generuje obraz dla istniejącej postaci używając LangGraph.
+    """
+    auth.verify_logged_in_user(access_token, UserRoleEnum.USER)
+    user_id = auth.verify_token(access_token, "access")
+    
+    # Pobierz postać
+    character = auth.session.query(SavedCharacter).filter(
+        SavedCharacter.id == character_id,
+        SavedCharacter.user_id == user_id
+    ).first()
+    
+    if not character:
+        raise HTTPException(status_code=404, detail="Postać nie znaleziona")
+    
+    try:
+        # Przygotuj dane dla LangGraph
+        input_data = {
+            "messages": f"{character.appearance}\n\n{character.description}"
+        }
+        
+        config = {"configurable": {"thread_id": str(user_id)}}
+        
+        # Wywołaj LangGraph tylko dla generowania obrazu
+        resp = graph.invoke(input_data, config=config)
+        
+        # Zapisz URL obrazu w bazie danych
+        character_image = CharacterImage(
+            character_id=character_id,
+            image_url=resp["image_url"],
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+        
+        auth.session.add(character_image)
+        auth.session.commit()
+        auth.session.refresh(character_image)
+        
+        return character_image
+        
+    except Exception as e:
+        auth.session.rollback()
+        print(f"Error generating character image: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Błąd podczas generowania obrazu postaci: {str(e)}"
+        )

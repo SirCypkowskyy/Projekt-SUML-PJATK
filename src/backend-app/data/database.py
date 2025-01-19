@@ -6,9 +6,6 @@ from typing import Annotated
 from core.config import settings
 from sqlmodel import SQLModel, Session, create_engine
 from fastapi import Depends
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 
 database_file_name = settings.SQLITE_FILE_NAME
 sqlite_url = f"sqlite:///{database_file_name}"

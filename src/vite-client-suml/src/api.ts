@@ -95,4 +95,28 @@ export async function getAvailableMoves(characterClass: string): Promise<Array<{
     throw new Error('Failed to fetch available moves')
   }
   return response.json()
+}
+
+export async function generateCharacter(characterClass: string, initialInfo: any): Promise<GeneratedCharacter> {
+  const response = await fetch(`${API_BASE_URL}/character-gen/generate?character_class=${characterClass}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      initial_info: initialInfo,
+      questions: initialInfo.questions?.map((question: any) => ({
+        text: question.question ?? "",
+        type: question.context ?? "",
+        options: [],
+        guidance: ""
+      })) ?? [],
+      answers: initialInfo.answers ?? {}
+    }),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw error
+  }
+  return response.json()
 } 
